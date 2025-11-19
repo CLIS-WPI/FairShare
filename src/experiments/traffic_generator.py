@@ -48,11 +48,14 @@ def generate_user_positions(config: ScenarioConfig, seed: Optional[int] = None) 
         operator = i % config.num_operators
         
         # Assign priority (random, but higher for some users)
-        if np.random.random() < 0.2:  # 20% high priority
+        # Use single random call to ensure correct probability distribution:
+        # 20% high, 30% medium, 50% low
+        rand_val = np.random.random()
+        if rand_val < 0.2:  # 20% high priority
             priority = np.random.uniform(0.7, 1.0)
-        elif np.random.random() < 0.5:  # 30% medium priority
+        elif rand_val < 0.5:  # 30% medium priority (0.2 to 0.5 = 30% of total)
             priority = np.random.uniform(0.4, 0.7)
-        else:  # 50% low priority
+        else:  # 50% low priority (0.5 to 1.0 = 50% of total)
             priority = np.random.uniform(0.1, 0.4)
         
         users.append({
