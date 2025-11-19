@@ -245,13 +245,31 @@ class FuzzyAdaptivePolicy:
     def update_fuzzy_rules(self, rules: List[Dict]):
         """Update fuzzy inference rules dynamically."""
         if self.fuzzy_system:
-            self.fuzzy_system.update_rules(rules)
+            # Check if fuzzy_system has update_rule_weights method (AdaptiveFIS)
+            if hasattr(self.fuzzy_system, 'update_rule_weights'):
+                # Convert rules to performance_feedback format if needed
+                # For now, this is a placeholder - actual implementation depends on rule format
+                pass
+            # FuzzyInferenceSystem doesn't have update_rules method
+            # Rules are fixed in Phase 3 implementation
+            # If dynamic rule updates are needed, use AdaptiveFIS wrapper
     
     def get_policy_stats(self) -> Dict:
         """Get statistics about policy performance."""
-        return {
+        stats = {
             'policy_type': 'fuzzy_adaptive',
             'fuzzy_system_active': self.fuzzy_system is not None,
-            'total_allocations': len(self.spectrum_map.allocations)
+            'total_allocations': 0
         }
+        
+        # Check if spectrum_map exists and has database attribute
+        if self.spectrum_map is not None:
+            # SpectrumMap uses 'database' dictionary, not 'allocations'
+            if hasattr(self.spectrum_map, 'database'):
+                stats['total_allocations'] = len(self.spectrum_map.database)
+            # Also check spectrum_env for active allocations
+            if hasattr(self.spectrum_env, 'beams'):
+                stats['active_beams'] = len(self.spectrum_env.beams)
+        
+        return stats
 
