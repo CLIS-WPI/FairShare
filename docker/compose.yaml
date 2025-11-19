@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  fairness:
+    image: leo-fuzzy-fairness:latest
+    container_name: fairness-prod
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TF_FORCE_GPU_ALLOW_GROWTH=true
+      - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2
+      - PYTHONPATH=/workspace
+    volumes:
+      - ../data:/workspace/data
+      - ../experiments:/workspace/experiments
+      - ../results:/workspace/results
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: '2gb'
+    ulimits:
+      memlock: -1
+      stack: 67108864
+    command: python3 src/main.py --scenario experiments/scenarios/rural_coverage.yaml
+

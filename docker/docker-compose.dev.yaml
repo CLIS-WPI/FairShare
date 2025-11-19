@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  fairness-dev:
+    image: leo-fuzzy-fairness:dev
+    container_name: fairness-dev
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dev
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - TF_FORCE_GPU_ALLOW_GROWTH=true
+      - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2
+      - PYTHONPATH=/workspace
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      # Source code - live editing
+      - ../src:/workspace/src
+      - ../experiments:/workspace/experiments
+      - ../data:/workspace/data
+      - ../results:/workspace/results
+      - ../notebooks:/workspace/notebooks
+      - ../tests:/workspace/tests
+      # Jupyter notebook data
+      - jupyter-data:/root/.jupyter
+      # Python cache (optional, for faster restarts)
+      - python-cache:/root/.cache/pip
+    ports:
+      # Jupyter Lab
+      - "8888:8888"
+      # Jupyter Notebook (alternative)
+      - "8889:8889"
+      # TensorBoard (if needed)
+      - "6006:6006"
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    shm_size: '2gb'  # Increased shared memory for TensorFlow
+    ulimits:
+      memlock: -1
+      stack: 67108864
+
+volumes:
+  jupyter-data:
+  python-cache:
+

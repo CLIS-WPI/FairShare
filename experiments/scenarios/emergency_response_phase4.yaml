@@ -1,0 +1,47 @@
+# Emergency Response Scenario (Phase 4 Format)
+# Simulates emergency scenario with high-priority users
+
+scenario_name: "emergency_response"
+description: "Emergency response scenario with high-priority users"
+
+# Phase 4: Required fields
+sim_time_s: 300.0
+slot_duration_s: 0.05
+num_users: 200
+num_operators: 2
+carrier_frequency_hz: 12e9
+bandwidth_hz: 200e6
+
+traffic_model:
+  type: bursty
+  lambda_per_user: 0.5
+
+geo:
+  center_lat_deg: 34.0522
+  center_lon_deg: -118.2437
+  radius_km: 30
+
+# Legacy fields
+start_time: "2024-01-01T00:00:00"
+end_time: "2024-01-01T00:05:00"
+time_step_seconds: 0.05
+
+# TLE file (optional)
+tle_file: "data/tle/starlink_shell1.txt"
+
+# Ground stations
+ground_stations:
+  - [34.0522, -118.2437]  # Los Angeles
+
+# Frequency range
+frequency_range_hz: [10e9, 12e9]  # Ku band
+
+# Allocation policy
+policy: "fuzzy"
+
+# Channel conditions
+channel:
+  frequency_hz: 12e9
+  rain_rate_mmh: 1.0  # Light rain
+  temperature_k: 293.0
+
