@@ -38,8 +38,10 @@ class SpectrumEnvironment:
             frequency_range_hz: (min_freq, max_freq) in Hz
             frequency_resolution_hz: Frequency resolution for spectrum map
         """
-        self.freq_min, self.freq_max = frequency_range_hz
-        self.freq_resolution = frequency_resolution_hz
+        # Ensure numeric types (may come from YAML as strings)
+        self.freq_min = float(frequency_range_hz[0])
+        self.freq_max = float(frequency_range_hz[1])
+        self.freq_resolution = float(frequency_resolution_hz)
         
         # Create frequency bins
         self.freq_bins = np.arange(self.freq_min, self.freq_max, self.freq_resolution)
@@ -131,27 +133,40 @@ class SpectrumEnvironment:
         
         # Convert back to dBm
         if total_interference_linear > 0:
-            total_interference_dbm = 10 * np.log10(total_interference_linear)
+            # Add small epsilon to avoid log10(0) warning
+            total_interference_linear_safe = max(total_interference_linear, 1e-20)
+            total_interference_dbm = 10 * np.log10(total_interference_linear_safe)
         else:
             total_interference_dbm = -np.inf
         
         return total_interference_dbm
     
     def find_available_spectrum(self, bandwidth_hz: float,
-                               min_sinr_db: float = 10.0,
-                               exclude_beam_id: Optional[str] = None) -> List[Tuple[float, float]]:
+                               min_sinr_db: float = 0.0,  # Lowered from 10.0 to allow more allocations
+                               exclude_beam_id: Optional[str] = None,
+                               link_budget_snr_db: Optional[float] = None,
+                               allow_spatial_reuse: bool = True) -> List[Tuple[float, float]]:
         """
         Find available spectrum bands.
         
         Args:
             bandwidth_hz: Required bandwidth in Hz
-            min_sinr_db: Minimum required SINR in dB
+            min_sinr_db: Minimum required SINR in dB (default: 0.0, lowered to allow allocations)
             exclude_beam_id: Beam to exclude from search
+            link_budget_snr_db: Optional actual SNR from link budget (if None, uses assumed value)
             
         Returns:
             List of (center_freq, sinr) tuples for available bands
         """
         available_bands = []
+        
+        # Use actual link budget SNR if provided, otherwise use reasonable assumption
+        if link_budget_snr_db is not None:
+            # Use actual SNR from link budget
+            base_snr_db = link_budget_snr_db
+        else:
+            # Assume reasonable SNR for LEO satellite (typically 10-20 dB)
+            base_snr_db = 15.0
         
         # Scan frequency range
         for center_freq in np.arange(
@@ -160,13 +175,12 @@ class SpectrumEnvironment:
             bandwidth_hz
         ):
             # Check if band is available
+            # exclude_beam_id allows spatial reuse (different beams can use same frequency)
             interference = self.get_spectrum_occupancy(
-                center_freq, bandwidth_hz, exclude_beam_id
+                center_freq, bandwidth_hz, exclude_beam_id if allow_spatial_reuse else None
             )
             
-            # Estimate SINR (simplified: assume desired signal power)
-            # In practice, this would use actual link budget
-            desired_power_dbm = 40.0  # Assumed
+            # Estimate SINR using link budget SNR
             noise_dbm = -174.0 + 10 * np.log10(bandwidth_hz)  # Thermal noise
             
             if interference > -np.inf:
@@ -175,10 +189,13 @@ class SpectrumEnvironment:
                 interference_linear = 0
             
             noise_linear = 10**(noise_dbm / 10)
-            desired_linear = 10**(desired_power_dbm / 10)
+            # Use link budget SNR to estimate desired signal power
+            desired_linear = noise_linear * 10**(base_snr_db / 10)
             
             sinr_linear = desired_linear / (interference_linear + noise_linear)
-            sinr_db = 10 * np.log10(sinr_linear)
+            # Add small epsilon to avoid log10(0) warning
+            sinr_linear_safe = max(sinr_linear, 1e-20)
+            sinr_db = 10 * np.log10(sinr_linear_safe)
             
             if sinr_db >= min_sinr_db:
                 available_bands.append((center_freq, sinr_db))
@@ -208,18 +225,20 @@ class SpectrumEnvironment:
             self.occupancy_map[beam_id] = np.zeros(self.n_bins) - np.inf
     
     def get_available_channels(self, bandwidth_hz: float,
-                              min_sinr_db: float = 10.0) -> List[Tuple[float, float]]:
+                              min_sinr_db: float = 0.0,  # Lowered default to allow allocations
+                              link_budget_snr_db: Optional[float] = None) -> List[Tuple[float, float]]:
         """
         Get available channels for allocation.
         
         Args:
             bandwidth_hz: Required bandwidth in Hz
-            min_sinr_db: Minimum required SINR in dB
+            min_sinr_db: Minimum required SINR in dB (default: 0.0)
+            link_budget_snr_db: Optional actual SNR from link budget
             
         Returns:
             List of (center_frequency_hz, sinr_db) tuples
         """
-        return self.find_available_spectrum(bandwidth_hz, min_sinr_db)
+        return self.find_available_spectrum(bandwidth_hz, min_sinr_db, link_budget_snr_db=link_budget_snr_db)
     
     def check_conflict(self, frequency_hz: float, bandwidth_hz: float,
                       exclude_beam_id: Optional[str] = None) -> bool:
@@ -342,9 +361,11 @@ class SpectrumEnvironment:
             interference_linear += power_linear
         
         # Convert back to dBm (avoid log10(0) warning)
+        # Add small epsilon to avoid log10(0) for all values
+        interference_linear_safe = np.maximum(interference_linear, 1e-20)
         interference_map = np.where(
-            interference_linear > 1e-20,  # Small threshold to avoid log10(0)
-            10 * np.log10(interference_linear),
+            interference_linear > 1e-20,
+            10 * np.log10(interference_linear_safe),
             -np.inf
         )
         

@@ -153,11 +153,35 @@ class FuzzyAdaptivePolicy:
             user = user_data['user']
             user_context = user_data['context']
             
-            # Get available channels
-            available_channels = self.spectrum_env.get_available_channels(bandwidth_hz)
+            # Get available channels (use lower min_sinr to allow more allocations)
+            # Try with actual link budget SNR if available
+            user_link_budget = user_context.get('link_budget', {})
+            link_snr_db = user_link_budget.get('snr_db') if isinstance(user_link_budget, dict) else None
+            
+            # Get beam_id for spatial reuse (exclude this beam from interference check)
+            beam_id = user_context.get('beam_id', f"beam_{user.get('operator', 0)}_{user_id}")
+            
+            # Use find_available_spectrum directly to pass exclude_beam_id for spatial reuse
+            available_channels = self.spectrum_env.find_available_spectrum(
+                bandwidth_hz,
+                min_sinr_db=0.0,  # Lower threshold to allow allocations
+                exclude_beam_id=beam_id,  # Allow spatial reuse (different beams can share frequency)
+                link_budget_snr_db=link_snr_db,
+                allow_spatial_reuse=True
+            )
             
             if not available_channels:
-                # No channels available
+                # No channels available - try with even lower threshold
+                available_channels = self.spectrum_env.find_available_spectrum(
+                    bandwidth_hz,
+                    min_sinr_db=-10.0,  # Very low threshold as fallback
+                    exclude_beam_id=beam_id,
+                    link_budget_snr_db=link_snr_db,
+                    allow_spatial_reuse=True
+                )
+            
+            if not available_channels:
+                # Still no channels available
                 allocations[user_id] = None
                 continue
             
@@ -165,9 +189,7 @@ class FuzzyAdaptivePolicy:
             best_channel = max(available_channels, key=lambda x: x[1])
             center_freq, sinr = best_channel
             
-            # Try to allocate
-            beam_id = user_context.get('beam_id', f"beam_{user.get('operator', 0)}_{user_id}")
-            
+            # Try to allocate (beam_id already set above)
             allocation = self.spectrum_env.allocate(
                 user_id=user_id,
                 bandwidth_hz=bandwidth_hz,

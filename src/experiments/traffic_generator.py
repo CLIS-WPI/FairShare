@@ -103,21 +103,30 @@ def generate_traffic_arrivals(
             
             if traffic_type == 'poisson':
                 # Poisson arrivals: number of packets per slot
-                num_packets = np.random.poisson(lambda_per_user)
-                # Demand is normalized (0-1)
-                demand = min(num_packets * 0.1, 1.0)  # Scale to [0, 1]
+                # Scale lambda to get more realistic traffic
+                # lambda_per_user is packets per slot, scale it up for realistic demand
+                num_packets = np.random.poisson(lambda_per_user * 10)  # Scale up for more traffic
+                # Demand in actual bps (not normalized)
+                # Assume average packet size ~1500 bytes = 12000 bits
+                packet_size_bits = 12000  # 1500 bytes
+                packets_per_second = num_packets / slot_duration
+                demand_bps = packets_per_second * packet_size_bits
+                # Cap at reasonable fraction of bandwidth (e.g., 80% max)
+                max_demand_bps = config.bandwidth_hz * 0.8
+                demand = min(demand_bps, max_demand_bps)
             elif traffic_type == 'constant':
-                # Constant demand
-                demand = lambda_per_user
+                # Constant demand in bps (scale lambda to bps)
+                # lambda_per_user is treated as fraction of bandwidth
+                demand = lambda_per_user * config.bandwidth_hz
             elif traffic_type == 'bursty':
                 # Bursty traffic: occasional high demand
                 if np.random.random() < 0.1:  # 10% chance of burst
-                    demand = np.random.uniform(0.8, 1.0)
+                    demand = np.random.uniform(0.6, 0.8) * config.bandwidth_hz
                 else:
-                    demand = np.random.uniform(0.1, 0.3)
+                    demand = np.random.uniform(0.1, 0.3) * config.bandwidth_hz
             else:
-                # Default: uniform random
-                demand = np.random.uniform(0.0, lambda_per_user)
+                # Default: uniform random (as fraction of bandwidth)
+                demand = np.random.uniform(0.0, lambda_per_user) * config.bandwidth_hz
             
             slot_demands[user_id] = float(demand)
         

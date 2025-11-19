@@ -56,8 +56,12 @@ class ScenarioConfig:
         self.slot_duration_s = data.get('slot_duration_s', 0.05)
         self.num_users = data.get('num_users', 100)
         self.num_operators = data.get('num_operators', 3)
-        self.carrier_frequency_hz = data.get('carrier_frequency_hz', 12e9)
-        self.bandwidth_hz = data.get('bandwidth_hz', 200e6)
+        # Ensure numeric types (YAML may load scientific notation as string)
+        carrier_freq = data.get('carrier_frequency_hz', 12e9)
+        self.carrier_frequency_hz = float(carrier_freq) if carrier_freq is not None else 12e9
+        
+        bandwidth = data.get('bandwidth_hz', 200e6)
+        self.bandwidth_hz = float(bandwidth) if bandwidth is not None else 200e6
         self.traffic_model = data.get('traffic_model', {'type': 'poisson', 'lambda_per_user': 0.2})
         self.geo = data.get('geo', {
             'center_lat_deg': 42.27,
@@ -83,12 +87,19 @@ class ScenarioConfig:
                 (self.geo['center_lat_deg'], self.geo['center_lon_deg'])
             ]
         
-        # Frequency range
+        # Frequency range - ensure numeric types
         freq_range = data.get('frequency_range_hz', [10e9, 12e9])
         if isinstance(freq_range, list):
-            self.frequency_range_hz = tuple(freq_range)
+            # Convert each element to float
+            self.frequency_range_hz = tuple(float(f) for f in freq_range)
+        elif isinstance(freq_range, tuple):
+            self.frequency_range_hz = tuple(float(f) for f in freq_range)
         else:
-            self.frequency_range_hz = freq_range
+            # Single value or other type
+            try:
+                self.frequency_range_hz = (float(freq_range[0]), float(freq_range[1]))
+            except (TypeError, IndexError):
+                self.frequency_range_hz = (10e9, 12e9)
         
         # Users (if explicitly defined)
         self.users = data.get('users', [])

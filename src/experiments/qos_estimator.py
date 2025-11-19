@@ -54,11 +54,50 @@ class QoSEstimator:
             demand = traffic_demands.get(user_id, 0.0)
             
             # Throughput: based on capacity and allocation
-            if allocation is not None and 'capacity_bps' in link_budget:
-                # Allocated capacity (scaled by allocation)
-                capacity = link_budget['capacity_bps']
-                # Throughput is min of capacity and demand
-                throughput = min(capacity, demand * capacity) if demand > 0 else 0.0
+            if allocation is not None:
+                # Get SINR from allocation
+                sinr_db = allocation[1] if isinstance(allocation, tuple) else 0.0
+                
+                # Use capacity from link budget if available
+                if 'capacity_bps' in link_budget:
+                    capacity = link_budget['capacity_bps']
+                    # Scale capacity by SINR (higher SINR = better efficiency)
+                    # SINR in dB: convert to linear and use Shannon capacity scaling
+                    sinr_linear = 10**(sinr_db / 10)
+                    # Capacity scales with log2(1 + SINR), but we simplify
+                    # For SINR > 0 dB, we get some capacity
+                    # Use the actual allocated bandwidth (from allocation, not link budget)
+                    # The allocation bandwidth is the actual channel bandwidth assigned
+                    allocated_bandwidth_hz = link_budget.get('bandwidth_hz', 200e6)
+                    
+                    if sinr_db > 0:
+                        # Use Shannon capacity: C = B * log2(1 + SINR)
+                        # Use allocated bandwidth, not full link budget bandwidth
+                        shannon_capacity = allocated_bandwidth_hz * np.log2(1 + sinr_linear)
+                        # Effective capacity is the minimum of:
+                        # 1. Link budget capacity (based on SNR)
+                        # 2. Shannon capacity (based on SINR and allocated bandwidth)
+                        # This ensures we don't exceed what the channel can actually support
+                        effective_capacity = min(capacity, shannon_capacity)
+                    else:
+                        # Very low capacity for negative SINR
+                        effective_capacity = capacity * 0.1
+                    
+                    # Throughput is min of effective capacity and demand
+                    # This represents actual data rate achieved
+                    if demand > 0:
+                        throughput = min(effective_capacity, demand)
+                    else:
+                        throughput = 0.0
+                else:
+                    # No capacity in link budget - estimate from bandwidth and SINR
+                    bandwidth_hz = link_budget.get('bandwidth_hz', 200e6)
+                    sinr_linear = 10**(sinr_db / 10)
+                    if sinr_db > 0:
+                        capacity_estimate = bandwidth_hz * np.log2(1 + sinr_linear)
+                    else:
+                        capacity_estimate = bandwidth_hz * 0.01  # Very low for negative SINR
+                    throughput = min(capacity_estimate, demand) if demand > 0 else 0.0
             else:
                 throughput = 0.0
             

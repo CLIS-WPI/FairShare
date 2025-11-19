@@ -102,11 +102,15 @@ def gini_coefficient(allocations: np.ndarray) -> float:
     # Sort allocations
     sorted_alloc = np.sort(allocations)
     
-    # Compute Gini
-    index = np.arange(1, n + 1)
-    gini = (2 * np.sum(index * sorted_alloc)) / (n * np.sum(sorted_alloc)) - (n + 1) / n
+    # Compute Gini (handle zero sum case)
+    total_alloc = np.sum(sorted_alloc)
+    if total_alloc == 0 or n == 0:
+        return 1.0  # Maximum inequality when all zeros
     
-    return gini
+    index = np.arange(1, n + 1)
+    gini = (2 * np.sum(index * sorted_alloc)) / (n * total_alloc) - (n + 1) / n
+    
+    return np.clip(gini, 0.0, 1.0)  # Ensure valid range
 
 
 def max_min_fairness(allocations: np.ndarray) -> float:

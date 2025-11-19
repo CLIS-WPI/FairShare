@@ -78,7 +78,7 @@ RUN python3 -m pip install --no-cache-dir \
 COPY . .
 
 # Set Python path
-ENV PYTHONPATH=/workspace:$PYTHONPATH
+ENV PYTHONPATH=/workspace
 
 # Expose Jupyter port
 EXPOSE 8888

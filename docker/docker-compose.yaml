@@ -27,4 +27,7 @@ services:
     working_dir: /workspace
     stdin_open: true
     tty: true
+    ports:
+      - "8888:8888"  # Jupyter Lab
     command: /bin/bash
+
