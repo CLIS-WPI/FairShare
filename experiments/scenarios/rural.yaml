@@ -1,0 +1,58 @@
+# Rural Coverage Scenario
+# Simulates sparse user distribution with varying demands
+
+scenario_name: "Rural Coverage"
+description: "Sparse user distribution typical of rural satellite coverage"
+
+# Simulation parameters
+start_time: "2024-01-01T00:00:00"
+end_time: "2024-01-01T02:00:00"
+time_step_seconds: 60.0
+
+# TLE file (optional)
+tle_file: "data/tle/starlink_shell1.txt"
+
+# Ground stations
+ground_stations:
+  - [45.0, -93.0]  # Rural Minnesota
+  - [40.0, -100.0]  # Rural Nebraska
+
+# Frequency range
+frequency_range_hz: [10e9, 12e9]  # Ku band
+
+# Allocation policy
+policy: "fuzzy"  # Options: static, priority, load_adaptive, fuzzy
+
+# Users
+users:
+  - id: "user_001"
+    demand: 0.5
+    priority: 0.3
+    location: [45.5, -93.5]
+  
+  - id: "user_002"
+    demand: 0.8
+    priority: 0.5
+    location: [45.2, -93.2]
+  
+  - id: "user_003"
+    demand: 0.3
+    priority: 0.4
+    location: [44.8, -93.8]
+  
+  - id: "user_004"
+    demand: 0.6
+    priority: 0.6
+    location: [40.5, -100.5]
+  
+  - id: "user_005"
+    demand: 0.4
+    priority: 0.3
+    location: [40.2, -100.2]
+
+# Channel conditions
+channel:
+  frequency_hz: 12e9
+  rain_rate_mmh: 0.0  # Clear sky
+  temperature_k: 290.0
+

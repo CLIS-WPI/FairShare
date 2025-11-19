@@ -1,0 +1,73 @@
+# Urban Congestion Scenario
+# Simulates dense user distribution with high demands
+
+scenario_name: "Urban Congestion"
+description: "Dense user distribution with high traffic demands"
+
+# Simulation parameters
+start_time: "2024-01-01T00:00:00"
+end_time: "2024-01-01T01:00:00"
+time_step_seconds: 30.0
+
+# TLE file (optional)
+tle_file: "data/tle/starlink_shell1.txt"
+
+# Ground stations
+ground_stations:
+  - [40.7128, -74.0060]  # New York City
+  - [34.0522, -118.2437]  # Los Angeles
+
+# Frequency range
+frequency_range_hz: [10e9, 12e9]  # Ku band
+
+# Allocation policy
+policy: "load_adaptive"  # Adaptive to handle congestion
+
+# Users (dense distribution)
+users:
+  - id: "user_001"
+    demand: 0.9
+    priority: 0.7
+    location: [40.7130, -74.0062]
+  
+  - id: "user_002"
+    demand: 0.95
+    priority: 0.8
+    location: [40.7125, -74.0058]
+  
+  - id: "user_003"
+    demand: 0.85
+    priority: 0.6
+    location: [40.7135, -74.0065]
+  
+  - id: "user_004"
+    demand: 0.9
+    priority: 0.9
+    location: [40.7120, -74.0055]
+  
+  - id: "user_005"
+    demand: 0.8
+    priority: 0.5
+    location: [40.7140, -74.0070]
+  
+  - id: "user_006"
+    demand: 0.75
+    priority: 0.4
+    location: [34.0525, -118.2440]
+  
+  - id: "user_007"
+    demand: 0.9
+    priority: 0.6
+    location: [34.0520, -118.2435]
+  
+  - id: "user_008"
+    demand: 0.85
+    priority: 0.7
+    location: [34.0530, -118.2445]
+
+# Channel conditions
+channel:
+  frequency_hz: 12e9
+  rain_rate_mmh: 2.0  # Light rain
+  temperature_k: 295.0
+

@@ -1,0 +1,50 @@
+# Development Dockerfile - extends base with dev tools
+FROM leo-fuzzy-fairness:latest
+
+# Install development tools
+RUN apt-get update && apt-get install -y \
+    vim \
+    nano \
+    htop \
+    git \
+    iputils-ping \
+    net-tools \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Jupyter Lab and development tools
+RUN python3 -m pip install --no-cache-dir \
+    jupyterlab \
+    jupyter \
+    ipywidgets \
+    matplotlib \
+    seaborn \
+    ipython \
+    notebook \
+    && rm -rf /root/.cache/pip
+
+# Configure Jupyter
+RUN mkdir -p /root/.jupyter && \
+    echo "c.ServerApp.ip = '0.0.0.0'" > /root/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.port = 8888" >> /root/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.open_browser = False" >> /root/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.allow_root = True" >> /root/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.token = ''" >> /root/.jupyter/jupyter_lab_config.py && \
+    echo "c.ServerApp.password = ''" >> /root/.jupyter/jupyter_lab_config.py
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+if [ "$1" = "jupyter" ]; then\n\
+    jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\n\
+elif [ "$1" = "notebook" ]; then\n\
+    jupyter notebook --ip=0.0.0.0 --port=8889 --no-browser --allow-root --NotebookApp.token="" --NotebookApp.password=""\n\
+else\n\
+    exec "$@"\n\
+fi' > /usr/local/bin/entrypoint.sh && \
+    chmod +x /usr/local/bin/entrypoint.sh
+
+WORKDIR /workspace
+
+# Default command
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["/bin/bash"]
+

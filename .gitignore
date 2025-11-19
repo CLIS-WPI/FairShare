@@ -1,1 +1,80 @@
-az
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# Results and outputs
+results/*.csv
+results/*.json
+plots/*.pdf
+plots/*.png
+plots/*.jpg
+
+# Data (keep structure, ignore large files)
+data/tle/*.txt
+!data/tle/.gitkeep
+data/traffic_patterns.npy
+
+# Docker
+*.log
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+
+# Environment variables
+.env
+.env.local
+
+# Large files
+*.h5
+*.hdf5
+*.pkl
+*.pickle

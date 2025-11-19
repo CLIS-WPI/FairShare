@@ -1,0 +1,7 @@
+# Place Nsight Systems .deb file here
+# Download from: https://developer.nvidia.com/nsight-systems
+# Example filename: nsight-systems-2025.5.1_2025.5.1.121-1_amd64.deb
+# 
+# The Dockerfile will automatically install it if found.
+# If not present, the build will continue without Nsight Systems.
+
