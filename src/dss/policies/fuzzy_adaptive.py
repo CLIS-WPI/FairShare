@@ -267,9 +267,11 @@ class FuzzyAdaptivePolicy:
             # SpectrumMap uses 'database' dictionary, not 'allocations'
             if hasattr(self.spectrum_map, 'database'):
                 stats['total_allocations'] = len(self.spectrum_map.database)
-            # Also check spectrum_env for active allocations
-            if hasattr(self.spectrum_env, 'beams'):
-                stats['active_beams'] = len(self.spectrum_env.beams)
+        
+        # Also check spectrum_env for active allocations (independent of spectrum_map)
+        # spectrum_env is always present (required constructor parameter)
+        if hasattr(self.spectrum_env, 'beams'):
+            stats['active_beams'] = len(self.spectrum_env.beams)
         
         return stats
 
