@@ -23,7 +23,9 @@ services:
       - ../plots:/workspace/plots
     environment:
       - PYTHONPATH=/workspace
-      - CUDA_VISIBLE_DEVICES=all
+      - CUDA_VISIBLE_DEVICES=all  # For TensorFlow to see all GPUs
+      - TF_FORCE_GPU_ALLOW_GROWTH=true  # Avoid OOM by growing memory as needed
+      - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2  # Performance boost
     working_dir: /workspace
     stdin_open: true
     tty: true
