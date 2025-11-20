@@ -7,7 +7,6 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev
-    runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
       - TF_FORCE_GPU_ALLOW_GROWTH=true
@@ -35,7 +34,10 @@ services:
       - "6006:6006"
     stdin_open: true
     tty: true
-    command: /bin/bash
+    shm_size: '2gb'  # Increased shared memory for TensorFlow
+    ulimits:
+      memlock: -1
+      stack: 67108864
     deploy:
       resources:
         reservations:
@@ -43,10 +45,7 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    shm_size: '2gb'  # Increased shared memory for TensorFlow
-    ulimits:
-      memlock: -1
-      stack: 67108864
+    command: /bin/bash
 
 volumes:
   jupyter-data:

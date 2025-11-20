@@ -1,0 +1,74 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.eggs
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache
+.coverage
+htmlcov
+*.cover
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb_checkpoints
+
+# Virtual environments
+venv
+env
+ENV
+.venv
+
+# IDE files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Docker files (don't need docker dir in build context when building from it)
+docker/
+.dockerignore
+
+# Documentation
+README.md
+*.md
+docs/
+
+# CI/CD
+.github
+.gitlab-ci.yml
+
+# Results and data directories (these are mounted as volumes)
+results/
+plots/
+data/
+notebooks/
+
+# Test files (if not needed in production)
+tests/
+*.test.py
+
+# Temporary files
+*.log
+*.tmp
+tmp/
+temp/
+
+# OS files
+Thumbs.db
+.Trash-*
