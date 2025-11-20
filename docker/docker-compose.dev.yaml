@@ -8,9 +8,10 @@ services:
       context: ..
       dockerfile: docker/Dockerfile.dev
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - TF_FORCE_GPU_ALLOW_GROWTH=true
-      - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2
+      - NVIDIA_VISIBLE_DEVICES=all  # Docker runtime level - makes GPUs visible to container
+      - CUDA_VISIBLE_DEVICES=all  # TensorFlow level - makes GPUs visible to TensorFlow
+      - TF_FORCE_GPU_ALLOW_GROWTH=true  # Avoid OOM by growing memory as needed
+      - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2  # Performance boost
       - PYTHONPATH=/workspace
       - JUPYTER_ENABLE_LAB=yes
     volumes:

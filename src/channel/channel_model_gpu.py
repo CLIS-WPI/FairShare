@@ -52,7 +52,7 @@ class ChannelModelGPU:
     
     def _build_gpu_functions(self):
         """Build GPU-accelerated computation functions."""
-        @tf.function(jit_compile=True)
+        @tf.function(jit_compile=True, reduce_retracing=True)
         def compute_path_loss_batch(slant_ranges, elevations):
             """Batch path loss computation on GPU."""
             # Free space path loss: FSPL = 20*log10(4*pi*d*f/c)
@@ -79,7 +79,7 @@ class ChannelModelGPU:
             
             return fspl_db + correction
         
-        @tf.function(jit_compile=True)
+        @tf.function(jit_compile=True, reduce_retracing=True)
         def compute_snr_batch(rx_powers, bandwidths):
             """Batch SNR computation on GPU."""
             # Noise power
