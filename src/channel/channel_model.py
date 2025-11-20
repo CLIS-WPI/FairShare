@@ -428,8 +428,8 @@ class ChannelModel:
         snr_linear = 10**(snr_db / 10)
         noise_variance = signal_power / snr_linear
         
-        # Apply AWGN channel
-        received = self.awgn_channel([signal, noise_variance])
+        # Apply AWGN channel (Sionna 1.2.1 uses named parameter 'no')
+        received = self.awgn_channel(signal, no=noise_variance)
         
         return received
     

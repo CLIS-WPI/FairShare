@@ -13,7 +13,7 @@ class TestSatelliteGeometry:
     
     def test_compute_elevation(self):
         """Test compute_elevation function."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         user_xyz = np.array([6371000, 0, 0])  # User on equator
         sat_xyz = np.array([7000e3, 0, 0])  # Satellite above
         
@@ -24,18 +24,20 @@ class TestSatelliteGeometry:
     
     def test_elevation_calculation(self):
         """Test elevation angle calculation."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         sat_pos = np.array([7000e3, 0, 0])  # 7000 km in x direction
+        sat_vel = np.array([0, 0, 0])
         dt = datetime.now()
         
-        elevation = geom.elevation((42.0, -71.0), sat_pos, dt)
+        geometry = geom.compute_geometry(sat_pos, sat_vel, dt)
+        elevation = geometry['elevation']
         
         assert isinstance(elevation, float)
         assert -90 <= elevation <= 90
     
     def test_compute_doppler(self):
         """Test compute_doppler function."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         fc = 12e9  # 12 GHz
         sat_vel = np.array([0, 7500, 0])  # 7.5 km/s
         
@@ -46,18 +48,19 @@ class TestSatelliteGeometry:
     
     def test_doppler_calculation(self):
         """Test Doppler shift calculation."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         sat_pos = np.array([7000e3, 0, 0])
         sat_vel = np.array([0, 7500, 0])  # 7.5 km/s in y direction
         dt = datetime.now()
         
-        doppler = geom.doppler((42.0, -71.0), sat_pos, sat_vel, dt)
+        geometry = geom.compute_geometry(sat_pos, sat_vel, dt)
+        doppler = geometry['doppler_shift']
         
         assert isinstance(doppler, float)
     
     def test_compute_slant_range(self):
         """Test compute_slant_range function."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         user_xyz = np.array([6371000, 0, 0])
         sat_xyz = np.array([7000e3, 0, 0])
         
@@ -69,18 +72,20 @@ class TestSatelliteGeometry:
     
     def test_distance_calculation(self):
         """Test slant range calculation."""
-        geom = SatelliteGeometry(lat=42.0, lon=-71.0)
+        geom = SatelliteGeometry(42.0, -71.0)
         sat_pos = np.array([7000e3, 0, 0])
+        sat_vel = np.array([0, 0, 0])
         dt = datetime.now()
         
-        distance = geom.distance((42.0, -71.0), sat_pos, dt)
+        geometry = geom.compute_geometry(sat_pos, sat_vel, dt)
+        distance = geometry['slant_range']
         
         assert isinstance(distance, float)
         assert distance > 0
     
     def test_eci_to_ecef_conversion(self):
         """Test ECI to ECEF coordinate conversion."""
-        geom = SatelliteGeometry(lat=0.0, lon=0.0)
+        geom = SatelliteGeometry(0.0, 0.0)
         eci_pos = np.array([7000e3, 0, 0])
         dt = datetime.now()
         

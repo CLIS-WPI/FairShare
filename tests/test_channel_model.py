@@ -142,8 +142,10 @@ class TestChannelModelSionna(unittest.TestCase):
         
         import tensorflow as tf
         
-        # Create test signal
-        signal = tf.random.normal([100, 64], dtype=tf.complex64)
+        # Create test signal (complex64 by combining real and imaginary parts)
+        real_part = tf.random.normal([100, 64], dtype=tf.float32)
+        imag_part = tf.random.normal([100, 64], dtype=tf.float32)
+        signal = tf.complex(real_part, imag_part)
         snr_db = 10.0
         
         # Apply channel
