@@ -58,7 +58,6 @@ data/traffic_patterns.npy
 
 # Docker
 *.log
-.dockerignore
 
 # OS
 .DS_Store

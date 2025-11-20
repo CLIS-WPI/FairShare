@@ -1,5 +1,32 @@
-# Development Dockerfile - extends base with dev tools
-FROM leo-fuzzy-fairness:latest
+# Development Dockerfile - extends NVIDIA TensorFlow base with dev tools
+# This should be built after the main image, or use multi-stage build
+# For now, we'll use the same base image to ensure it can build independently
+FROM nvcr.io/nvidia/tensorflow:24.12-tf2-py3
+
+# Set working directory
+WORKDIR /workspace
+
+# Set timezone
+ENV TZ=America/New_York
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install base system dependencies first
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    wget \
+    unzip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy and install Python requirements
+COPY requirements.txt .
+RUN python3 -m pip install --no-cache-dir --upgrade pip && \
+    python3 -m pip install --no-cache-dir sionna && \
+    python3 -m pip install --no-cache-dir -r requirements.txt
+
+# Set Python path
+ENV PYTHONPATH=/workspace
 
 # Install development tools
 RUN apt-get update && apt-get install -y \
