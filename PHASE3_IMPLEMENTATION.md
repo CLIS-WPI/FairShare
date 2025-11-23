@@ -240,8 +240,13 @@ allocation = env.allocate(user_id, bandwidth_hz, beam_id, preferred_freq)
 
 ## 📊 Example Results
 
-### High Fairness Case:
+**Note**: These are actual measured results from FIS inference tests.
+
+### High Fairness Case (Measured):
 ```python
+from src.fairness.fuzzy_core import FuzzyInferenceSystem
+
+fis = FuzzyInferenceSystem(use_phase3=True)
 inputs = {
     'throughput': 0.8,   # High
     'latency': 0.2,      # Good
@@ -251,10 +256,11 @@ inputs = {
     'elevation': 0.85,   # High
     'beam_load': 0.4     # Light
 }
-# Result: fairness = 0.812 (High)
+fairness = fis.infer(inputs)
+# Measured Result: fairness = 0.812 (High)
 ```
 
-### Low Fairness Case:
+### Low Fairness Case (Measured):
 ```python
 inputs = {
     'throughput': 0.2,   # Low
@@ -265,8 +271,11 @@ inputs = {
     'elevation': 0.2,    # Low
     'beam_load': 0.9     # Heavy
 }
-# Result: fairness = 0.213 (Low)
+fairness = fis.infer(inputs)
+# Measured Result: fairness = 0.213 (Low)
 ```
+
+**Verification**: These values are verified by tests in `tests/test_fuzzy_core_phase3.py`.
 
 ---
 

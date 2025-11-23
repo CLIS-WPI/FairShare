@@ -133,23 +133,47 @@ python experiments/generate_plots.py --scenario urban_congestion_phase4
 
 ## 🖼️ Example Results
 
-### Fairness Metrics Over Time
+**Note**: Results shown below are from actual simulation runs. Run your own simulations to generate results for your specific scenarios.
+
+### Sample Results (from `urban_congestion_phase4` scenario, 5-second simulation)
 
 ```
-Mean Jain Index:        0.823
-Mean Fuzzy Fairness:    0.756
-Mean α-fairness (α=1):  12.45
-Mean Rate:              45.32 Mbps
-Cell Edge Rate:         18.67 Mbps
+Mean Jain Index:        0.100
+Mean Fuzzy Fairness:    0.268
+Mean α-fairness (α=1):  135.40
+Mean Rate:              0.40 Mbps
+Cell Edge Rate:         0.00 Mbps
+Operator Imbalance:     0.086
+```
+
+**To generate your own results:**
+```bash
+# Run simulation
+python -m src.main --scenario urban_congestion_phase4 --policy fuzzy --duration-s 30
+
+# Results will be saved to results/urban_congestion_fuzzy.csv
+# Use the notebook or generate_plots.py to analyze
 ```
 
 ### Policy Comparison
 
-| Policy | Jain Index | Fuzzy Fairness | Mean Rate (Mbps) |
-|--------|------------|----------------|------------------|
-| Static | 0.712      | 0.645          | 42.1             |
-| Priority | 0.789    | 0.723          | 48.3             |
-| **Fuzzy** | **0.823** | **0.756**      | **45.3**         |
+**Note**: Policy comparison requires running simulations with each policy. Example workflow:
+
+```bash
+# Run each policy
+for policy in static priority fuzzy dqn; do
+  python -m src.main --scenario urban_congestion_phase4 --policy $policy --duration-s 30
+done
+
+# Compare results
+python experiments/generate_plots.py --scenario urban_congestion_phase4
+```
+
+Results will vary based on:
+- Scenario configuration (users, operators, traffic patterns)
+- Simulation duration
+- Random seed
+- System configuration
 
 ## 🎓 Citation
 
