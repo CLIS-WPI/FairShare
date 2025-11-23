@@ -7,7 +7,7 @@ name = "fuzzy-fairness-dss-leo"
 version = "1.0.0"
 description = "Fuzzy-Fairness Dynamic Spectrum Sharing for LEO Satellite Networks"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 license = {text = "MIT"}
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
@@ -21,6 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 
 dependencies = [

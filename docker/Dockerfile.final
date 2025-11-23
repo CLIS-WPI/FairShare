@@ -1,5 +1,6 @@
 # Final Production Dockerfile for Phase 5
-# Python 3.10/3.11 + TensorFlow 2.16+ + Sionna 1.2.1 + OpenNTN + CUDA 12.5
+# Python 3.12 (from NVIDIA TensorFlow image) + TensorFlow 2.16+ + Sionna 1.2.1 + OpenNTN + CUDA 12.5
+# Note: Base image nvcr.io/nvidia/tensorflow:24.12-tf2-py3 includes Python 3.12
 
 FROM nvcr.io/nvidia/tensorflow:24.12-tf2-py3
 

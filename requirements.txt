@@ -1,5 +1,5 @@
-# Python version requirement: 3.12
-# Note: Python 3.12 is installed in Dockerfile
+# Python version requirement: >=3.10 (Python 3.12 in Docker image)
+# Note: Docker image (nvcr.io/nvidia/tensorflow:24.12-tf2-py3) includes Python 3.12
 
 # Core dependencies
 numpy>=1.21.0
