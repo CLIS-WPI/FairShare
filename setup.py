@@ -36,8 +36,9 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
-    python_requires=">=3.10",
+    python_requires=">=3.10,<3.13",
     install_requires=requirements,
     extras_require={
         "dev": [
