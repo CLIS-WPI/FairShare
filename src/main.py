@@ -54,7 +54,8 @@ def run_simulation(
     output_dir: str = 'results',
     use_gpu: bool = True,
     gpu_id: Optional[int] = None,
-    duration_s: Optional[float] = None
+    duration_s: Optional[float] = None,
+    dqn_model_path: Optional[str] = None
 ) -> None:
     """
     Run complete slot-based simulation from scenario.
@@ -197,6 +198,18 @@ def run_simulation(
         else:
             policy = FuzzyAdaptivePolicy(spectrum_env, spectrum_map, fis)
             print(f"✓ CPU fuzzy policy initialized")
+    elif policy_name == "dqn":
+        # DQN baseline policy
+        if not TF_AVAILABLE:
+            raise ImportError("TensorFlow is required for DQN policy. Install with: pip install tensorflow")
+        from src.dss.policies.dqn_baseline import DQNPolicy
+        model_path = dqn_model_path or 'models/dqn/dqn_baseline_final.h5'
+        if not os.path.exists(model_path):
+            print(f"⚠ Warning: DQN model not found at {model_path}")
+            print("  Using untrained DQN policy. Train with: python scripts/train_dqn_baseline.py")
+            model_path = None
+        policy = DQNPolicy(spectrum_env, model_path=model_path)
+        print(f"✓ DQN policy initialized (model: {model_path if model_path else 'untrained'})")
     else:
         raise ValueError(f"Unknown policy: {policy_name}")
     print(f"✓ Policy initialized: {policy_name}")
@@ -348,6 +361,14 @@ def run_simulation(
                 bandwidth_hz=config.bandwidth_hz,
                 alpha=0.7
             )
+        elif policy_name == "dqn":
+            # DQN policy uses same interface as fuzzy
+            allocations = policy.allocate(
+                users=users,
+                qos=qos,
+                context=user_context,
+                bandwidth_hz=config.bandwidth_hz
+            )
         elif policy_name == "static":
             # Static policy: equal allocation
             demands_array = np.array([slot_demands.get(u['id'], 0.0) for u in users])
@@ -443,7 +464,7 @@ def main():
         '--policy',
         type=str,
         default='fuzzy',
-        choices=['static', 'priority', 'fuzzy'],
+        choices=['static', 'priority', 'fuzzy', 'dqn'],
         help='Allocation policy'
     )
     parser.add_argument(
@@ -463,6 +484,12 @@ def main():
         type=float,
         default=None,
         help='Override simulation duration in seconds'
+    )
+    parser.add_argument(
+        '--dqn-model-path',
+        type=str,
+        default=None,
+        help='Path to trained DQN model (for --policy dqn). Default: models/dqn/dqn_baseline_final.h5'
     )
     
     args = parser.parse_args()
@@ -510,7 +537,8 @@ def main():
         output_dir=args.output,
         use_gpu=use_gpu,
         gpu_id=gpu_id,
-        duration_s=args.duration_s
+        duration_s=args.duration_s,
+        dqn_model_path=args.dqn_model_path
     )
 
 
