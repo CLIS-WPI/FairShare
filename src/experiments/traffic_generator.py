@@ -163,17 +163,22 @@ class TrafficGenerator:
         Generate complete traffic scenario.
         
         Returns:
-            Dictionary with 'users' and 'traffic' keys
+            Dictionary with 'users', 'traffic', and 'priorities' keys
         """
-        # Generate user positions
+        # Generate user positions (includes priorities)
         self.users = generate_user_positions(self.config, self.seed)
         
         # Generate traffic arrivals
         self.traffic = generate_traffic_arrivals(self.config, self.users, self.seed)
         
+        # Extract priorities as separate dictionary (FIXED: was missing)
+        priorities = {user['id']: user['priority'] for user in self.users}
+        
         return {
             'users': self.users,
-            'traffic': self.traffic
+            'traffic': self.traffic,
+            'priorities': priorities,  # FIXED: Added priorities to return dict
+            'user_ids': [user['id'] for user in self.users]  # Also add user_ids for convenience
         }
     
     def get_user_demand(self, user_id: str, time_s: float) -> float:

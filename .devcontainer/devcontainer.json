@@ -2,7 +2,10 @@
   "name": "Fuzzy-Fairness DSS LEO",
   "build": {
     "dockerfile": "../docker/Dockerfile.final",
-    "context": "${localWorkspaceFolder}"
+    "context": "${localWorkspaceFolder}",
+    "args": {
+      "BUILDKIT_INLINE_CACHE": "1"
+    }
   },
   "features": {
     "ghcr.io/devcontainers/features/git:1": {}
@@ -40,8 +43,13 @@
     "--gpus=all"
   ],
   "remoteUser": "root",
-  "postCreateCommand": "pip install -e .",
+  "workspaceFolder": "/workspace",
+  "postCreateCommand": "bash .devcontainer/post-create.sh",
   "forwardPorts": [8888],
+  "containerEnv": {
+    "PYTHONPATH": "/workspace",
+    "TZ": "UTC"
+  },
   "portsAttributes": {
     "8888": {
       "label": "Jupyter Lab",

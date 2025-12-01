@@ -1,5 +1,5 @@
 """
-Setup script for Fuzzy-Fairness DSS LEO package.
+Setup script for FairShare DSS LEO package.
 """
 
 from setuptools import setup, find_packages
@@ -17,14 +17,14 @@ if requirements_file.exists():
         requirements = [line.strip() for line in f if line.strip() and not line.startswith('#')]
 
 setup(
-    name="fuzzy-fairness-dss-leo",
+    name="fairshare-dss-leo",
     version="1.0.0",
     author="Your Name",
     author_email="your.email@example.com",
-    description="Fuzzy-Fairness Dynamic Spectrum Sharing for LEO Satellite Networks",
+    description="FairShare: Deep Fairness Benchmarking for Multi-Operator Dynamic Spectrum Sharing in LEO Satellite",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/your-org/fuzzy-fairness-dss-leo",
+    url="https://github.com/your-org/fairshare-dss-leo",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
     classifiers=[
@@ -56,7 +56,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "fuzzy-dss=src.main:main",
+            "fairshare=src.main:main",
         ],
     },
 )

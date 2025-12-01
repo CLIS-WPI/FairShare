@@ -280,13 +280,47 @@ class SpectrumEnvironment:
         Returns:
             (center_frequency_hz, sinr_db) if allocation successful, None otherwise
         """
-        # Find available channels (excludes occupied bands)
-        available = self.get_available_channels(bandwidth_hz)
+        # FIXED: Find available channels EXCLUDING current beam (allows spatial reuse)
+        # This allows different beams to use same frequency
+        available = self.find_available_spectrum(
+            bandwidth_hz,
+            min_sinr_db=0.0,
+            exclude_beam_id=beam_id,  # FIXED: Exclude current beam for spatial reuse
+            allow_spatial_reuse=True
+        )
         
         if not available:
             return None
         
-        # Select best channel (highest SINR)
+        # FIXED: Filter available channels to exclude frequencies this beam already uses
+        # This allows beams to have multiple allocations at different frequencies
+        if beam_id is not None and beam_id in self.occupancy_map:
+            # Filter out frequencies that this beam already uses
+            filtered_available = []
+            for freq, sinr in available:
+                freq_start = freq - bandwidth_hz / 2
+                freq_end = freq + bandwidth_hz / 2
+                start_bin = int((freq_start - self.freq_min) / self.freq_resolution)
+                end_bin = int((freq_end - self.freq_min) / self.freq_resolution)
+                start_bin = max(0, min(start_bin, self.n_bins - 1))
+                end_bin = max(0, min(end_bin, self.n_bins - 1))
+                
+                # Check if beam already occupies this frequency
+                existing_occupancy = self.occupancy_map[beam_id][start_bin:end_bin + 1]
+                if not np.any(existing_occupancy > -np.inf) or allow_same_beam_reallocation:
+                    # This frequency is free for this beam (or reallocation allowed)
+                    filtered_available.append((freq, sinr))
+            
+            if filtered_available:
+                available = filtered_available
+            else:
+                # No free frequencies for this beam
+                return None
+        
+        # Select best channel (highest SINR) from filtered available channels
+        if not available:
+            return None
+            
         if preferred_frequency_hz is not None:
             # Try to use preferred frequency
             for freq, sinr in available:
@@ -304,24 +338,6 @@ class SpectrumEnvironment:
         # Allocate to beam (or create new beam if needed)
         if beam_id is None:
             beam_id = f"beam_{user_id}"
-        
-        # Conflict detection: Check if same beam already uses this frequency
-        if beam_id in self.beams:
-            # Check if this beam already has allocation in this frequency range
-            freq_start = center_freq - bandwidth_hz / 2
-            freq_end = center_freq + bandwidth_hz / 2
-            start_bin = int((freq_start - self.freq_min) / self.freq_resolution)
-            end_bin = int((freq_end - self.freq_min) / self.freq_resolution)
-            start_bin = max(0, min(start_bin, self.n_bins - 1))
-            end_bin = max(0, min(end_bin, self.n_bins - 1))
-            
-            # Check if beam already occupies this range
-            if beam_id in self.occupancy_map:
-                existing_occupancy = self.occupancy_map[beam_id][start_bin:end_bin + 1]
-                if np.any(existing_occupancy > -np.inf) and not allow_same_beam_reallocation:
-                    # Conflict: same beam trying to allocate same frequency
-                    print(f"⚠ Conflict detected: Beam {beam_id} already uses frequency {center_freq/1e9:.2f} GHz")
-                    return None
         
         if beam_id not in self.beams:
             # Create default beam

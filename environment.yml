@@ -1,4 +1,4 @@
-name: fuzzy-fairness-dss
+name: fairshare-dss
 channels:
   - conda-forge
   - defaults

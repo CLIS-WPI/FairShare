@@ -21,7 +21,7 @@ docker build -t leo-fuzzy-fairness:dev -f docker/Dockerfile.dev .
 
 # Start development container
 cd docker
-docker-compose -f docker-compose.dev.yaml up -d
+docker compose -f docker-compose.dev.yaml up -d
 ```
 
 ## Accessing the Development Environment
@@ -39,17 +39,18 @@ Inside the container:
 jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
 ```
 
-Or use the entrypoint:
-```bash
-docker exec -it fairness-dev /usr/local/bin/entrypoint.sh jupyter
-```
-
 Access at: http://localhost:8888
 
 ### Start Jupyter Notebook
 
+Inside the container:
 ```bash
-docker exec -it fairness-dev /usr/local/bin/entrypoint.sh notebook
+jupyter notebook --ip=0.0.0.0 --port=8889 --no-browser --allow-root
+```
+
+Or from host:
+```bash
+docker exec -it fairness-dev jupyter notebook --ip=0.0.0.0 --port=8889 --no-browser --allow-root
 ```
 
 Access at: http://localhost:8889
@@ -71,32 +72,32 @@ The following directories are mounted for live editing:
 
 ### View logs
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml logs -f
+docker compose -f docker/docker-compose.dev.yaml logs -f
 ```
 
 ### Stop container
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml stop
+docker compose -f docker/docker-compose.dev.yaml stop
 ```
 
 ### Start container
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml start
+docker compose -f docker/docker-compose.dev.yaml start
 ```
 
 ### Restart container
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml restart
+docker compose -f docker/docker-compose.dev.yaml restart
 ```
 
 ### Stop and remove
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml down
+docker compose -f docker/docker-compose.dev.yaml down
 ```
 
 ### Rebuild and restart
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml up -d --build
+docker compose -f docker/docker-compose.dev.yaml up -d --build
 ```
 
 ## Development Tools Included
@@ -131,20 +132,20 @@ docker exec -it fairness-dev python3 -c "import tensorflow as tf; print(tf.confi
 
 ### Container won't start
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml logs
+docker compose -f docker/docker-compose.dev.yaml logs
 ```
 
 ### Rebuild everything
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml down
+docker compose -f docker/docker-compose.dev.yaml down
 docker build -t leo-fuzzy-fairness:latest -f docker/Dockerfile .
 docker build -t leo-fuzzy-fairness:dev -f docker/Dockerfile.dev .
-docker-compose -f docker/docker-compose.dev.yaml up -d
+docker compose -f docker/docker-compose.dev.yaml up -d
 ```
 
 ### Clear volumes (if needed)
 ```bash
-docker-compose -f docker/docker-compose.dev.yaml down -v
+docker compose -f docker/docker-compose.dev.yaml down -v
 ```
 
 ## Ports

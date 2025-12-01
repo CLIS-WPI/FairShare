@@ -11,8 +11,14 @@ WORKDIR /workspace
 ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
+# Update CA certificates first (fix certificate expiration issues)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    && update-ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     gcc \
     g++ \

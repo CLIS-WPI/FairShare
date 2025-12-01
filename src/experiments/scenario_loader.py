@@ -36,7 +36,7 @@ class ScenarioConfig:
     tle_file: Optional[str] = None
     ground_stations: List[Tuple[float, float]] = field(default_factory=list)
     frequency_range_hz: Tuple[float, float] = (10e9, 12e9)
-    policy: str = "fuzzy"
+    policy: str = "priority"
     users: List[Dict] = field(default_factory=list)
     channel: Dict = field(default_factory=dict)
     
@@ -75,7 +75,7 @@ class ScenarioConfig:
         self.end_time = data.get('end_time', None)
         self.time_step_seconds = data.get('time_step_seconds', self.slot_duration_s)
         self.tle_file = data.get('tle_file', None)
-        self.policy = data.get('policy', 'fuzzy')
+        self.policy = data.get('policy', 'priority')
         
         # Ground stations
         gs_list = data.get('ground_stations', [])

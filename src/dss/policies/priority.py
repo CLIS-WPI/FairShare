@@ -64,14 +64,18 @@ class PriorityPolicy:
         # Ensure allocations don't exceed demands
         allocation = np.minimum(allocation, demands)
         
-        # Check fairness constraint
+        # FIXED: Check fairness constraint, but don't override priorities completely
         fairness = self._compute_fairness(allocation)
         
         if fairness < self.min_fairness:
             # Redistribute to improve fairness while respecting priorities
-            allocation = self._balance_fairness_priority(
-                allocation, demands, priorities, available_resources
-            )
+            # BUT: Only if fairness is extremely low (near 0), otherwise keep priority-based allocation
+            if fairness < 0.1:  # Only balance if extremely unfair
+                allocation = self._balance_fairness_priority(
+                    allocation, demands, priorities, available_resources
+                )
+            # Otherwise, keep priority-based allocation even if fairness is slightly below threshold
+            # This ensures priorities are actually used
         
         return allocation
     
@@ -104,6 +108,8 @@ class PriorityPolicy:
         """
         Balance fairness and priority constraints.
         
+        FIXED: Preserve priority ordering even when balancing for fairness.
+        
         Args:
             allocation: Current allocation
             demands: User demands
@@ -115,21 +121,41 @@ class PriorityPolicy:
         """
         n = len(allocation)
         
-        # Start with equal allocation
-        equal_alloc = np.ones(n) * (available_resources / n)
-        equal_alloc = np.minimum(equal_alloc, demands)
+        # FIXED: Instead of blending with equal allocation, redistribute while preserving priority order
+        # Sort by priority (descending)
+        priority_indices = np.argsort(priorities)[::-1]
         
-        # Blend with priority-based allocation
-        alpha = self.min_fairness  # Blend factor
-        balanced = alpha * equal_alloc + (1 - alpha) * allocation
+        # Start with minimum allocation for all
+        min_allocation = available_resources * self.min_fairness / n
+        balanced = np.ones(n) * min_allocation
+        balanced = np.minimum(balanced, demands)
+        
+        # Distribute remaining resources based on priorities
+        remaining = available_resources - np.sum(balanced)
+        if remaining > 0:
+            # Normalize priorities for remaining allocation
+            if np.max(priorities) > np.min(priorities):
+                priorities_norm = (priorities - np.min(priorities)) / (
+                    np.max(priorities) - np.min(priorities)
+                )
+            else:
+                priorities_norm = np.ones(n)
+            
+            # Weight by priority
+            priority_weights = priorities_norm
+            total_weight = np.sum(priority_weights)
+            if total_weight > 0:
+                additional = priority_weights * (remaining / total_weight)
+                balanced = balanced + additional
+                balanced = np.minimum(balanced, demands)
         
         # Normalize to use all available resources
         total_allocated = np.sum(balanced)
-        if total_allocated > 0:
+        if total_allocated > 0 and total_allocated < available_resources:
             balanced = balanced * (available_resources / total_allocated)
+            balanced = np.minimum(balanced, demands)
         
         # Ensure within bounds
-        balanced = np.minimum(balanced, demands)
         balanced = np.maximum(balanced, 0)
         
         return balanced

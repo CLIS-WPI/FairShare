@@ -122,7 +122,7 @@ def plot_comparison_radar(metrics_list: List[Dict[str, float]],
 
 
 def plot_fairness_over_time(fairness_history: List[Dict],
-                           metric_name: str = 'fuzzy_fairness_score',
+                           metric_name: str = 'weighted_fairness',
                            title: str = "Fairness Over Time",
                            save_path: Optional[str] = None) -> plt.Figure:
     """

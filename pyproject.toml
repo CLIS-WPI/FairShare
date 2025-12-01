@@ -3,16 +3,16 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fuzzy-fairness-dss-leo"
+name = "fairshare-dss-leo"
 version = "1.0.0"
-description = "Fuzzy-Fairness Dynamic Spectrum Sharing for LEO Satellite Networks"
+description = "FairShare: Deep Fairness Benchmarking for Multi-Operator Dynamic Spectrum Sharing in LEO Satellite"
 readme = "README.md"
 requires-python = ">=3.10,<3.13"
 license = {text = "MIT"}
 authors = [
     {name = "Your Name", email = "your.email@example.com"}
 ]
-keywords = ["LEO", "satellites", "spectrum", "fuzzy", "fairness", "DSS"]
+keywords = ["LEO", "satellites", "spectrum", "fairness", "DSS", "multi-operator", "dynamic-spectrum-sharing"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -52,7 +52,7 @@ gpu = [
 ]
 
 [project.scripts]
-fuzzy-dss = "src.main:main"
+fairshare = "src.main:main"
 
 [tool.black]
 line-length = 120
@@ -68,7 +68,7 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = "-v --cov=src --cov-report=html --cov-report=term"
+addopts = "-v"
 
 [tool.coverage.run]
 source = ["src"]

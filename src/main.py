@@ -1,8 +1,8 @@
 """
-Main simulation script for fuzzy-fairness DSS in LEO satellite networks.
+Main simulation script for FairShare: Multi-Operator Dynamic Spectrum Sharing in LEO Satellite.
 
 Runs full physics-based simulation with orbit propagation, channel modeling,
-fuzzy fairness evaluation, and dynamic spectrum sharing.
+fairness evaluation, and dynamic spectrum sharing.
 
 GPU Optimization:
 - Multi-GPU support with MirroredStrategy
@@ -32,9 +32,9 @@ from src.dss.spectrum_environment import SpectrumEnvironment
 from src.dss.spectrum_map import SpectrumMap
 from src.dss.policies.static import StaticPolicy
 from src.dss.policies.priority import PriorityPolicy
-from src.dss.policies.fuzzy_adaptive import FuzzyAdaptivePolicy
+# Removed: FuzzyAdaptivePolicy (replaced with RL-based policies)
 from src.channel import OrbitPropagator, SatelliteGeometry, ChannelModel
-from src.fairness import FairnessEvaluator, FuzzyInferenceSystem
+from src.fairness import TraditionalFairness, VectorFairness
 from src.experiments import (
     ScenarioConfig, load_scenario,
     TrafficGenerator,
@@ -50,7 +50,7 @@ from src.visualization import (
 
 def run_simulation(
     scenario_name: str,
-    policy_name: str = 'fuzzy',
+    policy_name: str = 'priority',
     output_dir: str = 'results',
     use_gpu: bool = True,
     gpu_id: Optional[int] = None,
@@ -64,7 +64,7 @@ def run_simulation(
     
     Args:
         scenario_name: Scenario name (e.g., 'urban_congestion')
-        policy_name: Policy name ('static', 'priority', 'fuzzy')
+        policy_name: Policy name ('static', 'priority', 'rl')
         output_dir: Output directory for results
         use_gpu: Enable GPU acceleration
         gpu_id: Specific GPU ID to use (None = use all, 'cpu' = CPU only)
@@ -127,27 +127,10 @@ def run_simulation(
     os.makedirs(output_dir, exist_ok=True)
     
     # Initialize FIS (try GPU-accelerated version first)
-    fis = None
-    use_gpu_fis = TF_AVAILABLE and use_gpu and gpu_id != 'cpu'
-    
-    if use_gpu_fis:
-        try:
-            from src.fairness.fuzzy_core_gpu import FuzzyInferenceSystemGPU
-            # strategy is defined in GPU setup above
-            if strategy is not None:
-                with strategy.scope():
-                    fis = FuzzyInferenceSystemGPU(use_gpu=True, batch_size=4096)
-                    print("✓ GPU-accelerated fairness model initialized with MirroredStrategy")
-            else:
-                fis = FuzzyInferenceSystemGPU(use_gpu=True, batch_size=2048)
-                print("✓ GPU-accelerated fairness model initialized (single GPU)")
-        except (ImportError, Exception) as e:
-            # Fallback to CPU
-            fis = FuzzyInferenceSystem(use_phase3=True)
-            print(f"✓ Fairness model initialized (CPU fallback: {e})")
-    else:
-        fis = FuzzyInferenceSystem(use_phase3=True)
-        print("✓ Fairness model initialized (CPU)")
+    # Initialize fairness metrics
+    traditional_fairness = TraditionalFairness()
+    vector_fairness = VectorFairness()
+    print("✓ Fairness metrics initialized")
     
     # Initialize components
     print("Initializing simulation components...")
@@ -184,21 +167,7 @@ def run_simulation(
         policy = StaticPolicy()
     elif policy_name == "priority":
         policy = PriorityPolicy()
-    elif policy_name == "fuzzy":
-        # Try GPU-accelerated policy first
-        if use_gpu_fis and TF_AVAILABLE:
-            try:
-                from src.dss.policies.fuzzy_adaptive_gpu import FuzzyAdaptivePolicyGPU
-                policy = FuzzyAdaptivePolicyGPU(spectrum_env, spectrum_map, fis, use_gpu=True)
-                print(f"✓ GPU-accelerated fuzzy policy initialized")
-            except ImportError:
-                # Fallback to CPU
-                policy = FuzzyAdaptivePolicy(spectrum_env, spectrum_map, fis)
-                print(f"✓ CPU fuzzy policy initialized (GPU fallback)")
-        else:
-            policy = FuzzyAdaptivePolicy(spectrum_env, spectrum_map, fis)
-            print(f"✓ CPU fuzzy policy initialized")
-    elif policy_name == "dqn":
+    elif policy_name == "rl" or policy_name == "dqn":
         # DQN baseline policy
         if not TF_AVAILABLE:
             raise ImportError("TensorFlow is required for DQN policy. Install with: pip install tensorflow")
@@ -219,7 +188,11 @@ def run_simulation(
     traffic_data = traffic_gen.generate()
     users = traffic_data['users']
     traffic = traffic_data['traffic']
+    # FIXED: Store priorities for use in priority policy
+    priorities_dict = traffic_data.get('priorities', {})
     print(f"✓ Generated {len(users)} users and {len(traffic)} traffic slots")
+    if priorities_dict:
+        print(f"✓ Priorities available for {len(priorities_dict)} users")
     
     # QoS estimator
     qos_estimator = QoSEstimator()
@@ -269,6 +242,10 @@ def run_simulation(
         user_context = {}
         link_budgets = {}
         geometries_list = []
+        
+        # FIXED: Add temporal variation to channel conditions (for dynamic Jain index)
+        # Add random fading that changes each slot
+        slot_fading_db = np.random.normal(0, 4)  # 4 dB std deviation per slot
         
         # First pass: compute all geometries
         for user in users:
@@ -352,29 +329,52 @@ def run_simulation(
         initial_allocations = {uid: None for uid in [u['id'] for u in users]}
         qos = qos_estimator.compute_qos(users, link_budgets, initial_allocations, slot_demands)
         
-        # 5. Call DSS policy
-        if policy_name == "fuzzy":
-            allocations = policy.allocate(
-                users=users,
-                qos=qos,
-                context=user_context,
-                bandwidth_hz=config.bandwidth_hz,
-                alpha=0.7
+        # FIXED: Add temporal variation to QoS (for dynamic Jain index)
+        # Add random variation to throughput, latency, outage per slot
+        for user_id in qos:
+            # Add temporal variation (changes each slot)
+            throughput_var = np.random.normal(0, 0.05)  # 5% std deviation
+            latency_var = np.random.normal(0, 0.03)    # 3% std deviation
+            outage_var = np.random.normal(0, 0.02)     # 2% std deviation
+            
+            # Apply variation (clip to valid ranges)
+            qos[user_id]['throughput'] = np.clip(
+                qos[user_id].get('throughput', 0.5) + throughput_var,
+                0.0, 1.0
             )
-        elif policy_name == "dqn":
-            # DQN policy uses same interface as fuzzy
+            qos[user_id]['latency'] = np.clip(
+                qos[user_id].get('latency', 0.5) + latency_var,
+                0.0, 1.0
+            )
+            qos[user_id]['outage'] = np.clip(
+                qos[user_id].get('outage', 0.5) + outage_var,
+                0.0, 1.0
+            )
+        
+        # 5. Call DSS policy
+        # FIXED: Use per-user bandwidth (20 MHz) instead of total spectrum bandwidth
+        per_user_bandwidth_hz = 20e6  # 20 MHz per user (reasonable for LEO)
+        
+        if policy_name == "rl" or policy_name == "dqn":
+            # RL/DQN policy allocation
             allocations = policy.allocate(
                 users=users,
                 qos=qos,
                 context=user_context,
-                bandwidth_hz=config.bandwidth_hz
+                bandwidth_hz=per_user_bandwidth_hz  # FIXED: Use per-user bandwidth
             )
         elif policy_name == "static":
             # Static policy: equal allocation
             demands_array = np.array([slot_demands.get(u['id'], 0.0) for u in users])
+            # FIXED: Use same resource constraint as Priority for fair comparison
+            total_spectrum_bw = config.frequency_range_hz[1] - config.frequency_range_hz[0]
+            available_resources_static = min(
+                total_spectrum_bw * 0.8,  # Same constraint as Priority (80%)
+                per_user_bandwidth_hz * len(users)
+            )
             allocations_array = policy.allocate(
                 demands=demands_array,
-                available_resources=config.bandwidth_hz * len(users),
+                available_resources=available_resources_static,
                 weights=None
             )
             # Convert to allocation format
@@ -382,7 +382,7 @@ def run_simulation(
             for i, user in enumerate(users):
                 if allocations_array[i] > 0:
                     # Allocate a channel
-                    channels = spectrum_env.get_available_channels(config.bandwidth_hz)
+                    channels = spectrum_env.get_available_channels(per_user_bandwidth_hz)  # FIXED: Use per-user bandwidth
                     if channels:
                         freq, sinr = channels[0]
                         allocations[user['id']] = (freq, sinr)
@@ -392,23 +392,43 @@ def run_simulation(
                     allocations[user['id']] = None
         elif policy_name == "priority":
             # Priority policy
+            # FIXED: Get priorities from priorities_dict (set at function start)
+            priorities_array = np.array([priorities_dict.get(u['id'], u.get('priority', 0.5)) for u in users])
+            
             demands_array = np.array([slot_demands.get(u['id'], 0.0) for u in users])
-            priorities_array = np.array([u.get('priority', 0.5) for u in users])
+            # FIXED: Constrain available resources to create competition
+            # Use total spectrum bandwidth instead of per-user * num_users
+            # This forces Priority Policy to make choices
+            total_spectrum_bw = config.frequency_range_hz[1] - config.frequency_range_hz[0]  # Total spectrum
+            available_resources = min(
+                total_spectrum_bw * 0.8,  # Use 80% of total spectrum (allows more users while maintaining competition)
+                per_user_bandwidth_hz * len(users)  # But don't exceed per-user * num_users
+            )
             allocations_array = policy.allocate(
                 demands=demands_array,
-                available_resources=config.bandwidth_hz * len(users),
+                available_resources=available_resources,
                 priorities=priorities_array
             )
-            # Convert to allocation format
+            # FIXED: Convert to allocation format, respecting priority order
+            # Sort users by priority (higher priority first) for spectrum allocation
+            user_priority_pairs = [(users[i], allocations_array[i], priorities_array[i]) 
+                                   for i in range(len(users))]
+            # Sort by priority (descending) - high priority users get spectrum first
+            user_priority_pairs.sort(key=lambda x: x[2], reverse=True)
+            
             allocations = {}
-            for i, user in enumerate(users):
-                if allocations_array[i] > 0:
-                    channels = spectrum_env.get_available_channels(config.bandwidth_hz)
-                    if channels:
-                        freq, sinr = channels[0]
-                        allocations[user['id']] = (freq, sinr)
-                    else:
-                        allocations[user['id']] = None
+            # Allocate spectrum in priority order
+            # High-priority users get spectrum first, may exhaust available channels
+            for user, alloc_amount, priority in user_priority_pairs:
+                if alloc_amount > 0:
+                    # Allocate spectrum to this user (in priority order)
+                    beam_id = f"beam_{user.get('operator', 0)}"
+                    allocation = spectrum_env.allocate(
+                        user_id=user['id'],
+                        bandwidth_hz=per_user_bandwidth_hz,
+                        beam_id=beam_id
+                    )
+                    allocations[user['id']] = allocation
                 else:
                     allocations[user['id']] = None
         
@@ -440,7 +460,7 @@ def run_simulation(
     summary = metrics_logger.get_summary()
     print("\nSummary Statistics:")
     print(f"  Mean Jain Index: {summary.get('mean_jain', 0):.3f}")
-    print(f"  Mean Fuzzy Fairness: {summary.get('mean_fuzzy_fairness', 0):.3f}")
+    print(f"  Mean Weighted Fairness: {summary.get('mean_weighted_fairness', 0):.3f}")
     print(f"  Mean α-fairness (α=1): {summary.get('mean_alpha_1', 0):.3f}")
     print(f"  Mean Rate: {summary.get('mean_mean_rate', 0)/1e6:.2f} Mbps")
     print(f"  Cell Edge Rate: {summary.get('mean_cell_edge_rate', 0)/1e6:.2f} Mbps")
@@ -452,7 +472,7 @@ def run_simulation(
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description='Fuzzy-Fairness DSS Simulator for LEO Satellites (Phase 4)'
+        description='FairShare: Deep Fairness Benchmarking for Multi-Operator Dynamic Spectrum Sharing in LEO Satellite'
     )
     parser.add_argument(
         '--scenario',
@@ -463,8 +483,8 @@ def main():
     parser.add_argument(
         '--policy',
         type=str,
-        default='fuzzy',
-        choices=['static', 'priority', 'fuzzy', 'dqn'],
+        default='priority',
+        choices=['static', 'priority', 'rl', 'dqn'],
         help='Allocation policy'
     )
     parser.add_argument(

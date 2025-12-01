@@ -3,12 +3,12 @@
 from .simulator import DSSSimulator
 from .spectrum_environment import SpectrumEnvironment, Beam
 from .spectrum_map import SpectrumMap, SpectrumMeasurement
-from .policies import StaticPolicy, PriorityPolicy, LoadAdaptivePolicy
+from .policies import StaticPolicy, PriorityPolicy
 
 __all__ = [
     'DSSSimulator',
     'SpectrumEnvironment', 'Beam',
     'SpectrumMap', 'SpectrumMeasurement',
-    'StaticPolicy', 'PriorityPolicy', 'LoadAdaptivePolicy'
+    'StaticPolicy', 'PriorityPolicy'
 ]
 

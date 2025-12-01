@@ -2,7 +2,7 @@
 Core DSS simulator using physics, fairness, and spectrum components.
 
 Main simulation loop that integrates orbit propagation, channel modeling,
-fuzzy fairness evaluation, and dynamic spectrum sharing.
+fairness evaluation, and dynamic spectrum sharing.
 """
 
 import numpy as np
@@ -11,18 +11,18 @@ from datetime import datetime, timedelta
 
 try:
     from ..channel import OrbitPropagator, SatelliteGeometry, ChannelModel
-    from ..fairness import FuzzyInferenceSystem, FairnessEvaluator
+    from ..fairness import TraditionalFairness, VectorFairness
 except ImportError:
     # Fallback for direct execution
     import sys
     import os
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), '../..'))
     from src.channel import OrbitPropagator, SatelliteGeometry, ChannelModel
-    from src.fairness import FuzzyInferenceSystem, FairnessEvaluator
+    from src.fairness import TraditionalFairness, VectorFairness
 
 from .spectrum_environment import SpectrumEnvironment, Beam
 from .spectrum_map import SpectrumMap
-from .policies import StaticPolicy, PriorityPolicy, LoadAdaptivePolicy
+from .policies import StaticPolicy, PriorityPolicy
 
 
 class DSSSimulator:
@@ -32,7 +32,7 @@ class DSSSimulator:
     Integrates:
     - Orbit propagation
     - Channel modeling
-    - Fuzzy fairness evaluation
+    - Fairness evaluation
     - Dynamic spectrum allocation
     """
     
@@ -40,7 +40,7 @@ class DSSSimulator:
                  tle_file: Optional[str] = None,
                  ground_stations: List[Tuple[float, float]] = None,
                  frequency_range_hz: Tuple[float, float] = (10e9, 12e9),
-                 policy_type: str = 'fuzzy'):
+                 policy_type: str = 'priority'):
         """
         Initialize DSS simulator.
         
@@ -48,7 +48,7 @@ class DSSSimulator:
             tle_file: Path to TLE file
             ground_stations: List of (lat, lon) tuples for ground stations
             frequency_range_hz: Frequency range for spectrum sharing
-            policy_type: 'static', 'priority', 'load_adaptive', or 'fuzzy'
+            policy_type: 'static', 'priority', or 'load_adaptive'
         """
         # Orbit propagation
         self.orbit_prop = OrbitPropagator(tle_file) if tle_file else None
@@ -63,8 +63,8 @@ class DSSSimulator:
         self.channel_model = ChannelModel()
         
         # Fairness evaluation
-        self.fis = FuzzyInferenceSystem()
-        self.fairness_evaluator = FairnessEvaluator(self.fis)
+        self.traditional_fairness = TraditionalFairness()
+        self.vector_fairness = VectorFairness()
         
         # Spectrum environment
         self.spectrum_env = SpectrumEnvironment(frequency_range_hz)
@@ -76,9 +76,10 @@ class DSSSimulator:
         elif policy_type == 'priority':
             self.policy = PriorityPolicy()
         elif policy_type == 'load_adaptive':
-            self.policy = LoadAdaptivePolicy()
-        else:  # fuzzy
-            self.policy = None  # Will use fuzzy FIS directly
+            # LoadAdaptivePolicy removed - use priority instead
+            self.policy = PriorityPolicy()
+        else:  # Default to priority
+            self.policy = PriorityPolicy()
         
         # Simulation state
         self.current_time = None
@@ -177,7 +178,7 @@ class DSSSimulator:
                 new_allocations = self.policy.allocate(
                     current_demands, available_resources, priorities
                 )
-            elif isinstance(self.policy, LoadAdaptivePolicy):
+            elif policy_type == 'load_adaptive':
                 new_allocations = self.policy.allocate(
                     current_demands, available_resources, network_load, priorities
                 )
@@ -186,9 +187,9 @@ class DSSSimulator:
                     current_demands, available_resources
                 )
         else:
-            # Use fuzzy FIS for allocation
-            new_allocations = self._fuzzy_allocation(
-                current_demands, available_resources, network_load, priorities
+            # Use priority policy as default
+            new_allocations = PriorityPolicy().allocate(
+                current_demands, available_resources, priorities
             )
         
         # Update user allocations
@@ -196,9 +197,12 @@ class DSSSimulator:
             self.users[user_id]['allocation'] = new_allocations[i]
         
         # Evaluate fairness
-        fairness_results = self.fairness_evaluator.evaluate(
-            new_allocations, current_demands, priorities, network_load
-        )
+        jain_index = self.traditional_fairness.jain_index(new_allocations)
+        gini_coefficient = self.traditional_fairness.gini_coefficient(new_allocations)
+        fairness_results = {
+            'jain_index': jain_index,
+            'gini_coefficient': gini_coefficient
+        }
         
         # Store history
         self.allocation_history.append({
@@ -220,60 +224,7 @@ class DSSSimulator:
             'channel_conditions': channel_conditions
         }
     
-    def _fuzzy_allocation(self, demands: np.ndarray,
-                         available_resources: float,
-                         network_load: float,
-                         priorities: np.ndarray) -> np.ndarray:
-        """
-        Allocate using fuzzy inference system.
-        
-        Args:
-            demands: User demands
-            available_resources: Available resources
-            network_load: Network load
-            priorities: User priorities
-            
-        Returns:
-            Allocations
-        """
-        n = len(demands)
-        
-        # Compute fairness for current state
-        current_allocations = np.array([self.users[uid]['allocation'] 
-                                       for uid in list(self.users.keys())[:n]])
-        fairness_metric = 1.0 - self.fairness_evaluator.evaluate(current_allocations)['gini_coefficient']
-        avg_priority = np.mean(priorities)
-        
-        # Fuzzy inference
-        inputs = {
-            'load': network_load,
-            'fairness': fairness_metric,
-            'priority': avg_priority
-        }
-        fuzzy_score = self.fis.infer(inputs)
-        
-        # Allocate based on fuzzy score
-        # Higher fuzzy score -> more fair allocation
-        if fuzzy_score > 0.7:
-            # Fair allocation
-            allocation = np.ones(n) * (available_resources / n)
-        elif fuzzy_score < 0.3:
-            # Priority-based allocation
-            priority_weights = 1.0 + priorities
-            total_weight = np.sum(priority_weights)
-            allocation = priority_weights * (available_resources / total_weight)
-        else:
-            # Balanced
-            fair_alloc = np.ones(n) * (available_resources / n)
-            priority_weights = 1.0 + 0.5 * priorities
-            total_weight = np.sum(priority_weights)
-            priority_alloc = priority_weights * (available_resources / total_weight)
-            alpha = (fuzzy_score - 0.3) / 0.4
-            allocation = alpha * fair_alloc + (1 - alpha) * priority_alloc
-        
-        # Ensure within bounds
-        allocation = np.minimum(allocation, demands)
-        allocation = np.maximum(allocation, 0)
+    # Removed: _fuzzy_allocation method (replaced with priority policy as default)
         
         # Normalize
         total_allocated = np.sum(allocation)

@@ -1,0 +1,26 @@
+======================================================================
+SIMULATION RESULTS SUMMARY
+======================================================================
+
+Timestamp: 2025-11-25T01:53:05.405580
+Number of Users: 100
+Operators: starlink, kuiper, oneweb
+Policies Tested: Static Equal, Static Proportional, Priority Based
+
+Policy Comparison:
+----------------------------------------------------------------------
+             Policy  Jain Index  Gini Coefficient  Weighted Fairness  Distance Fairness  Users Served
+       Static Equal    0.989864          0.053333           0.997973           0.000000           100
+Static Proportional    0.395154          0.639126           0.879031           0.347970           100
+     Priority Based    0.395154          0.639126           0.879031           0.695489           100
+
+Best Policies:
+----------------------------------------------------------------------
+Best Jain Index: Static Equal (0.9899)
+Best Weighted Fairness: Static Equal (0.9980)
+
+Key Insights:
+----------------------------------------------------------------------
+• Excellent fairness achieved (Jain > 0.9)
+• Strong multi-dimensional fairness (Weighted > 0.8)
+• Correlation (Jain vs Weighted): 1.000

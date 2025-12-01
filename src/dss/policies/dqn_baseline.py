@@ -1,5 +1,5 @@
 """
-DQN-based spectrum allocation baseline for comparison with fuzzy-adaptive DSS.
+DQN-based spectrum allocation baseline for comparison with other allocation policies.
 
 Phase 6: ML baseline for comparison studies.
 """
@@ -148,7 +148,7 @@ class DQNPolicy:
         """
         Allocate spectrum to users using trained DQN policy.
         
-        This method matches the interface of FuzzyAdaptivePolicy.allocate()
+        This method matches the interface of other allocation policies (Static, Priority, RL).
         
         Args:
             users: List of user dictionaries

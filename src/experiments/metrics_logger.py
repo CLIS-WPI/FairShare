@@ -16,7 +16,8 @@ from src.fairness.metrics import (
     gini_coefficient,
     max_min_fairness
 )
-from src.fairness.fuzzy_core import FuzzyInferenceSystem
+from src.fairness.traditional import TraditionalFairness
+from src.fairness.vector_metrics import VectorFairness
 
 
 class MetricsLogger:
@@ -24,24 +25,24 @@ class MetricsLogger:
     Logger for simulation metrics.
     
     Tracks:
-    - Fairness metrics (Jain, α-fair, Fuzzy, Gini)
+    - Fairness metrics (Jain, α-fair, Weighted Fairness, Gini)
     - QoS metrics (mean rate, cell edge rate)
     - Allocation statistics
     - Operator imbalance
     """
     
-    def __init__(self, scenario_name: str, policy_name: str, fis: Optional[FuzzyInferenceSystem] = None):
+    def __init__(self, scenario_name: str, policy_name: str):
         """
         Initialize metrics logger.
         
         Args:
             scenario_name: Name of scenario
-            policy_name: Name of policy (static, priority, fuzzy)
-            fis: Optional FIS for fuzzy fairness computation
+            policy_name: Name of policy (static, priority, rl)
         """
         self.scenario_name = scenario_name
         self.policy_name = policy_name
-        self.fis = fis or FuzzyInferenceSystem(use_phase3=True)
+        self.traditional_fairness = TraditionalFairness()
+        self.vector_fairness = VectorFairness()
         
         self.metrics_history = []
         self.current_slot = 0
@@ -107,14 +108,8 @@ class MetricsLogger:
         # Max-min fairness
         max_min = max_min_fairness(allocation_array)
         
-        # Fuzzy fairness (network-level)
-        # Use average context if available
-        if context:
-            # Compute network-level fuzzy fairness
-            fuzzy_fairness = self._compute_network_fuzzy_fairness(users, qos, context)
-        else:
-            # Fallback: use allocation-based fuzzy fairness
-            fuzzy_fairness = self._compute_allocation_fuzzy_fairness(allocation_array, priorities)
+        # Weighted fairness (multi-dimensional)
+        weighted_fairness = self._compute_weighted_fairness(allocation_array, throughput_array, priorities)
         
         # QoS statistics
         mean_rate = np.mean(throughput_array) if len(throughput_array) > 0 else 0.0
@@ -131,7 +126,7 @@ class MetricsLogger:
             'alpha_0': float(alpha_0),
             'alpha_1': float(alpha_1),
             'alpha_2': float(alpha_2),
-            'fuzzy_fairness': float(fuzzy_fairness),
+            'weighted_fairness': float(weighted_fairness),
             'gini': float(gini),
             'max_min': float(max_min),
             'mean_rate': float(mean_rate),
@@ -144,61 +139,70 @@ class MetricsLogger:
         
         self.metrics_history.append(metrics)
     
-    def _compute_network_fuzzy_fairness(self, users: List[Dict], qos: Dict[str, Dict],
-                                       context: Dict) -> float:
+    def _compute_weighted_fairness(self, allocations: np.ndarray,
+                                   throughputs: np.ndarray,
+                                   priorities: np.ndarray) -> float:
         """
-        Compute network-level fuzzy fairness from user contexts.
+        Compute weighted fairness from allocations and throughputs.
+        
+        Uses multi-dimensional fairness metrics considering throughput,
+        access rate, and QoS satisfaction.
         
         Args:
-            users: List of users
-            qos: QoS metrics per user
-            context: Context dictionary
+            allocations: Array of allocations (bandwidth in Hz)
+            throughputs: Array of throughput values (in bps)
+            priorities: Array of user priorities (not used directly, but for fallback)
             
         Returns:
-            Network-level fuzzy fairness score
+            Weighted fairness score (0.0 to 1.0, higher is better)
         """
-        # Collect all user fairness scores
-        fairness_scores = []
+        if len(allocations) == 0:
+            return 0.0
         
-        for user in users:
-            user_id = user['id']
-            user_qos = qos.get(user_id, {})
-            user_context = context.get(user_id, {})
-            
-            # Build FIS inputs
-            inputs = {
-                'throughput': np.clip(user_qos.get('throughput', 0.0) / 100e6, 0, 1),  # Normalize
-                'latency': np.clip(user_qos.get('latency', 1.0) / 1.0, 0, 1),  # Normalize
-                'outage': np.clip(user_qos.get('outage', 0.0), 0, 1),
-                'priority': np.clip(user.get('priority', 0.5), 0, 1),
-                'doppler': np.clip(user_context.get('doppler', 0.5), 0, 1),
-                'elevation': np.clip(user_context.get('elevation', 0.5) / 90.0, 0, 1),  # Normalize
-                'beam_load': np.clip(user_context.get('beam_load', 0.5), 0, 1)
-            }
-            
-            # Compute fairness score
-            fairness = self.fis.infer(inputs)
-            fairness_scores.append(fairness)
+        # Create multi-dimensional metrics for allocated users
+        metrics = []
+        for i in range(len(allocations)):
+            if allocations[i] > 0:
+                # Convert throughput from bps to Mbps
+                throughput_mbps = (throughputs[i] if i < len(throughputs) else 0.0) / 1e6
+                
+                metrics.append({
+                    'throughput_mbps': throughput_mbps,
+                    'latency_ms': 0.0,  # Not available in this context
+                    'access_rate': 1.0,  # User has allocation
+                    'coverage_quality': 1.0,  # Assume good coverage if allocated
+                    'qos_satisfaction': 1.0 if allocations[i] > 0 else 0.0
+                })
         
-        # Network-level fairness: average of user fairness scores
-        if len(fairness_scores) > 0:
-            return float(np.mean(fairness_scores))
-        return 0.0
-    
-    def _compute_allocation_fuzzy_fairness(self, allocations: np.ndarray,
-                                          priorities: List[float]) -> float:
-        """
-        Compute fuzzy fairness from allocations (fallback method).
+        if len(metrics) == 0:
+            # No allocations - return 0 fairness
+            return 0.0
         
-        Args:
-            allocations: Array of allocations
-            priorities: List of priorities
+        # Compute weighted fairness using vector fairness
+        try:
+            # Convert metrics to MultiDimensionalMetrics format
+            from src.fairness.vector_metrics import MultiDimensionalMetrics
             
-        Returns:
-            Fuzzy fairness score
-        """
-        # Use proportional fairness as proxy
-        return alpha_fairness(allocations, alpha=1.0)
+            metric_objects = [
+                MultiDimensionalMetrics(
+                    throughput_mbps=m['throughput_mbps'],
+                    latency_ms=m['latency_ms'],
+                    access_rate=m['access_rate'],
+                    coverage_quality=m['coverage_quality'],
+                    qos_satisfaction=m['qos_satisfaction']
+                )
+                for m in metrics
+            ]
+            
+            # Compute fairness vector
+            fairness_vector = self.vector_fairness.compute_fairness_vector(metric_objects)
+            
+            # Compute weighted fairness
+            weighted = self.vector_fairness.compute_weighted_fairness(fairness_vector)
+            return float(weighted)
+        except Exception as e:
+            # Fallback to proportional fairness (alpha=1)
+            return alpha_fairness(allocations, alpha=1.0)
     
     def _compute_operator_imbalance(self, allocations: np.ndarray,
                                    operators: List[int]) -> float:
@@ -274,7 +278,7 @@ class MetricsLogger:
         
         return {
             'mean_jain': float(df['jain'].mean()),
-            'mean_fuzzy_fairness': float(df['fuzzy_fairness'].mean()),
+            'mean_weighted_fairness': float(df['weighted_fairness'].mean()),
             'mean_alpha_1': float(df['alpha_1'].mean()),
             'mean_mean_rate': float(df['mean_rate'].mean()),
             'mean_cell_edge_rate': float(df['cell_edge_rate'].mean()),
@@ -285,7 +289,7 @@ class MetricsLogger:
 
 if __name__ == '__main__':
     # Test logger
-    logger = MetricsLogger("test_scenario", "fuzzy")
+    logger = MetricsLogger("test_scenario", "priority")
     
     # Simulate some metrics
     users = [

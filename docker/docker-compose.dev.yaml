@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   fairness-dev:
     image: leo-fuzzy-fairness:dev
@@ -46,7 +44,9 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    command: /bin/bash
+    # Override entrypoint and keep container running with bash
+    entrypoint: ["/bin/bash"]
+    command: ["-c", "tail -f /dev/null"]
 
 volumes:
   jupyter-data:

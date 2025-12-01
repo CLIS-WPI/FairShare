@@ -1,21 +1,22 @@
 cff-version: 1.2.0
 message: "If you use this software, please cite it as below."
-title: "Fuzzy-Fairness Dynamic Spectrum Sharing for LEO Satellite Networks"
+title: "FairShare: Deep Fairness Benchmarking for Multi-Operator Dynamic Spectrum Sharing in LEO Satellite"
 version: 1.0.0
-date-released: 2024-11-18
+date-released: 2024-11-25
 authors:
   - given-names: "Your"
     family-names: "Name"
     affiliation: "Your Institution"
     orcid: "https://orcid.org/0000-0000-0000-0000"
-repository-code: "https://github.com/your-org/fuzzy-fairness-dss-leo"
+repository-code: "https://github.com/your-org/fairshare-dss-leo"
 license: MIT
 keywords:
   - "LEO satellites"
   - "Dynamic spectrum sharing"
-  - "Fuzzy logic"
-  - "Fairness"
+  - "Fairness metrics"
+  - "Multi-operator"
   - "3GPP TR38.811"
   - "Sionna"
-abstract: "A comprehensive simulation framework for dynamic spectrum sharing in LEO satellite networks with fuzzy-logic-based fairness evaluation. Implements physics-based channel modeling, multi-operator spectrum allocation, and Mamdani fuzzy inference system for adaptive fairness-aware resource allocation."
+  - "Reinforcement learning"
+abstract: "A comprehensive simulation, benchmarking, and analysis framework for multi-operator LEO satellite constellations, focused on evaluating and optimizing fairness in dynamic spectrum sharing (DSS) using modern data-driven, multi-dimensional, and RL-based techniques."
 

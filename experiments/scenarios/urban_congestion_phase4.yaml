@@ -10,7 +10,7 @@ slot_duration_s: 0.05
 num_users: 500
 num_operators: 3
 carrier_frequency_hz: 12e9
-bandwidth_hz: 20e6  # Reduced from 200e6 to allow more users (10x more channels)
+bandwidth_hz: 200e6  # FIXED: Increased from 20e6 to support more concurrent users (was causing 2% capacity)
 
 traffic_model:
   type: poisson

@@ -5,12 +5,11 @@ Implements:
 - Jain's fairness index
 - α-Fairness (proportional, max-min)
 - Gini coefficient
-- Fuzzy fairness score
+- Weighted fairness (multi-dimensional)
 """
 
 import numpy as np
 from typing import List, Dict, Optional
-from .fuzzy_core import FuzzyInferenceSystem
 
 
 def jain_fairness_index(allocations: np.ndarray) -> float:
@@ -132,27 +131,22 @@ def max_min_fairness(allocations: np.ndarray) -> float:
     return np.min(allocations)
 
 
-def fuzzy_fairness_score(allocations: np.ndarray,
-                        demands: Optional[np.ndarray] = None,
-                        priorities: Optional[np.ndarray] = None,
-                        network_load: Optional[float] = None,
-                        fis: Optional[FuzzyInferenceSystem] = None) -> float:
+def weighted_fairness_score(allocations: np.ndarray,
+                           demands: Optional[np.ndarray] = None,
+                           priorities: Optional[np.ndarray] = None,
+                           network_load: Optional[float] = None) -> float:
     """
-    Compute fuzzy fairness score using FIS.
+    Compute weighted fairness score using multi-dimensional metrics.
     
     Args:
         allocations: Array of resource allocations
         demands: Array of user demands (optional)
         priorities: Array of user priorities (optional)
         network_load: Overall network load (optional)
-        fis: Fuzzy inference system (optional, creates default if None)
         
     Returns:
-        Fuzzy fairness score [0, 1]
+        Weighted fairness score [0, 1]
     """
-    if fis is None:
-        fis = FuzzyInferenceSystem()
-    
     allocations = np.array(allocations)
     
     # Compute current fairness metrics
@@ -172,20 +166,13 @@ def fuzzy_fairness_score(allocations: np.ndarray,
         else:
             network_load = 0.5  # Default moderate load
     
-    # Average priority if provided
-    avg_priority = np.mean(priorities) if priorities is not None else 0.5
+    # Weighted combination: 70% Jain, 30% fairness metric
+    weighted_score = 0.7 * jain + 0.3 * fairness_metric
     
-    # Prepare inputs for FIS
-    inputs = {
-        'load': network_load,
-        'fairness': fairness_metric,
-        'priority': avg_priority
-    }
+    # Adjust based on network load (higher load -> lower fairness)
+    load_factor = 1.0 - 0.2 * network_load  # Reduce by up to 20% at full load
     
-    # Infer fuzzy fairness score
-    fuzzy_score = fis.infer(inputs)
-    
-    return fuzzy_score
+    return weighted_score * load_factor
 
 
 class FairnessEvaluator:
@@ -193,14 +180,14 @@ class FairnessEvaluator:
     Comprehensive fairness evaluation using multiple metrics.
     """
     
-    def __init__(self, fis: Optional[FuzzyInferenceSystem] = None):
+    def __init__(self):
         """
         Initialize fairness evaluator.
         
-        Args:
-            fis: Fuzzy inference system for fuzzy fairness score
+        Uses traditional and vector-based fairness metrics.
         """
-        self.fis = fis or FuzzyInferenceSystem()
+        # Removed: FuzzyInferenceSystem dependency
+        # Using traditional and vector-based fairness metrics instead
     
     def evaluate(self, allocations: np.ndarray,
                 demands: Optional[np.ndarray] = None,
@@ -225,8 +212,8 @@ class FairnessEvaluator:
             'gini_coefficient': gini_coefficient(allocations),
             'max_min_fairness': max_min_fairness(allocations),
             'proportional_fairness': alpha_fairness(allocations, alpha=1.0),
-            'fuzzy_fairness_score': fuzzy_fairness_score(
-                allocations, demands, priorities, network_load, self.fis
+            'weighted_fairness_score': weighted_fairness_score(
+                allocations, demands, priorities, network_load
             )
         }
         
