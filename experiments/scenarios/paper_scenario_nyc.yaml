@@ -1,0 +1,111 @@
+# NYC Large-Scale Scenario Configuration
+# Paper: "AI-Driven Dynamic Spectrum Sharing for LEO Satellite Networks"
+# Objective: Demonstrate breakdown of classical methods at scale (5000 users)
+
+scenario_name: "nyc_manhattan_scale"
+description: "Large-scale NYC Manhattan scenario with 5000 users and 3-tier operator model"
+
+# Simulation Parameters
+sim_time_s: 30.0  # 600 slots * 50ms = 30 seconds (enough for Doppler effects)
+slot_duration_s: 0.05  # 50ms per slot
+time_step_seconds: 0.05
+
+# User Configuration
+num_users: 5000
+num_operators: 3
+
+# Geographic Configuration - Manhattan, NYC
+geo:
+  center_lat_deg: 40.75  # Central Manhattan
+  center_lon_deg: -73.975  # Central Manhattan
+  lat_range: [40.70, 40.80]  # Manhattan bounds
+  lon_range: [-74.02, -73.93]  # Manhattan bounds
+  radius_km: 15.0  # Manhattan is ~13km long
+  user_distribution:
+    type: "weighted"  # 80% in city center, 20% scattered
+    center_weight: 0.8
+    scatter_weight: 0.2
+
+# Frequency Configuration
+carrier_frequency_hz: 12e9  # 12 GHz (Ku-band)
+bandwidth_hz: 200e6  # 200 MHz total
+frequency_range_hz: [10e9, 12e9]  # 10-12 GHz range
+
+# Operator Configuration - 3 Tier Model
+operators:
+  - name: "Op_A"
+    type: "starlink_like"
+    description: "Starlink-like: High bandwidth eMBB, normal priority"
+    bandwidth_hz: 400e6  # 400 MHz allocated
+    priority: 0.5  # Normal priority
+    num_users: 3000  # 60% of users
+    user_distribution: "urban_center"
+    
+  - name: "Op_B"
+    type: "oneweb_like"
+    description: "OneWeb-like: IoT/Commercial, medium priority"
+    bandwidth_hz: 300e6  # 300 MHz allocated
+    priority: 0.6  # Medium priority
+    num_users: 1500  # 30% of users
+    user_distribution: "mixed"
+    
+  - name: "Op_C"
+    type: "critical_gov"
+    description: "Critical/Government: Low user count, Priority=1.0 (Critical)"
+    bandwidth_hz: 100e6  # 100 MHz (shared band)
+    priority: 1.0  # Critical priority - never drop
+    num_users: 500  # 10% of users (critical services)
+    user_distribution: "scattered"
+    critical: true  # Mark as critical operator
+
+# Traffic Model
+traffic_model:
+  type: "heterogeneous"
+  models:
+    - type: "poisson"
+      lambda_per_user: 0.3  # Higher traffic for eMBB
+      operator: "Op_A"
+    - type: "bursty"
+      burst_probability: 0.2
+      operator: "Op_B"
+    - type: "constant"
+      rate_mbps: 10.0  # Critical services need constant rate
+      operator: "Op_C"
+
+# Channel Model Configuration
+channel:
+  model: "3GPP_TR38.811"
+  frequency_hz: 12e9
+  scenario: "urban"
+  rain_rate_mmh: 0.0  # Clear sky for baseline
+  temperature_k: 290.0
+  ray_tracing: true  # Enable Sionna ray tracing
+  enable_doppler: true
+  enable_shadowing: true
+
+# Ground Stations (NYC area)
+ground_stations:
+  - [40.75, -73.975]  # Central Manhattan
+  - [40.72, -73.98]   # Lower Manhattan
+  - [40.78, -73.97]   # Upper Manhattan
+
+# Start/End Time
+start_time: "2024-01-01T12:00:00Z"
+end_time: "2024-01-01T12:00:30Z"
+
+# Policy Configuration
+policy: "priority"  # Default, will be overridden by command line
+
+# GPU Configuration for H100
+gpu_config:
+  batch_size: 1000  # Process 1000 users per batch (H100 can handle this)
+  use_mixed_precision: true
+  enable_xla: true
+
+# Output Configuration
+output:
+  save_interference_heatmap: true
+  save_per_slot_metrics: true
+  save_user_trajectories: false  # Too large for 5000 users
+  interference_resolution_km: 0.5  # 500m resolution for heatmap
+

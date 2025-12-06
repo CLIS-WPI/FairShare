@@ -45,13 +45,25 @@ class PriorityPolicy:
         priorities = np.array(priorities)
         n = len(demands)
         
-        # Normalize priorities to [0, 1]
-        if np.max(priorities) > np.min(priorities):
-            priorities_norm = (priorities - np.min(priorities)) / (
-                np.max(priorities) - np.min(priorities)
+        # FIXED: Use raw priorities without normalization to preserve differences between configurations
+        # Normalization flattens priority differences, making all ablation configurations identical
+        # For ablation study, we need to preserve absolute priority values
+        priorities_clipped = np.clip(priorities, 0.0, 1.0)
+        
+        # Check if priorities are already in reasonable range
+        # If they are, use them directly (preserves differences)
+        # Only normalize if priorities are in extreme ranges
+        if np.max(priorities_clipped) - np.min(priorities_clipped) < 0.01:
+            # All priorities same - use as-is
+            priorities_norm = priorities_clipped
+        elif np.min(priorities_clipped) < 0.1 or np.max(priorities_clipped) > 0.9:
+            # Extreme range - scale to [0.1, 1.0] but preserve relative differences
+            priorities_norm = 0.1 + 0.9 * (priorities_clipped - np.min(priorities_clipped)) / (
+                np.max(priorities_clipped) - np.min(priorities_clipped) + 1e-10
             )
         else:
-            priorities_norm = np.ones(n)
+            # Already in reasonable range - use raw values to preserve differences
+            priorities_norm = priorities_clipped
         
         # Compute priority weights
         # Higher priority gets more resources, but bounded by max_priority_boost

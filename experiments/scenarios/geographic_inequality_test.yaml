@@ -1,0 +1,57 @@
+scenario_name: "geographic_inequality_test"
+description: "Geographic inequality validation test - NYC urban center vs rural areas with real TLEs"
+
+sim_time_s: 30.0  # 600 slots * 0.05s
+slot_duration_s: 0.05
+num_users: 10000  # Increased to create scarcity
+num_operators: 2  # Starlink and OneWeb only
+
+carrier_frequency_hz: 12e9
+bandwidth_hz: 50e6  # REDUCED: 50 MHz total (creates scarcity)
+frequency_range_hz: [10e9, 10.05e9]  # 50 MHz total (25 MHz per operator)
+
+traffic_model:
+  type: poisson
+  lambda_per_user: 2.0
+
+# New York State coverage (NYC + rural areas)
+geo:
+  lat_range: [40.50, 41.20]  # Extended range: NYC to rural upstate
+  lon_range: [-74.50, -73.50]  # Extended range: includes rural areas
+  center_lat_deg: 40.75  # Manhattan center
+  center_lon_deg: -73.97  # Manhattan center
+  radius_km: 150.0  # Extended radius to include rural areas
+  user_distribution:
+    type: gaussian_2d  # NEW: Gaussian 2D distribution
+    center_lat: 40.75  # Manhattan (high density)
+    center_lon: -73.97
+    std_lat: 0.15  # Standard deviation in degrees (~16.5 km)
+    std_lon: 0.15
+    # Urban threshold: users within 1 std = urban, outside = rural
+    urban_threshold_std: 1.0
+
+operators:
+  - id: "Op_A"
+    name: "Starlink"
+    type: "starlink_shell1"
+    altitude_km: 550.0
+    inclination_deg: 53.0
+    priority: 0.5
+    bandwidth_mhz: 200  # Equal share: 400 MHz / 2 = 200 MHz
+    tle_file: "data/tle/starlink_shell1.tle"  # Real TLE file (to be downloaded)
+  - id: "Op_B"
+    name: "OneWeb"
+    type: "oneweb"
+    altitude_km: 1200.0
+    inclination_deg: 87.4
+    priority: 0.5
+    bandwidth_mhz: 200  # Equal share: 400 MHz / 2 = 200 MHz
+    tle_file: "data/tle/oneweb.tle"  # Real TLE file (to be downloaded)
+
+channel:
+  model: 3GPP TR38.811
+  ray_tracing: true
+  rain_rate_mmh: 2.0
+  temperature_k: 295.0
+  min_elevation_deg: 25.0  # Urban standard
+

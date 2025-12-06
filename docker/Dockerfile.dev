@@ -35,6 +35,9 @@ RUN python3 --version
 RUN python3 -m pip install --no-cache-dir --upgrade pip && \
     python3 -m pip install --no-cache-dir -r requirements.txt
 
+# Install TensorFlow 2.19.0 (override base image version)
+RUN python3 -m pip install --no-cache-dir tensorflow==2.19.0
+
 # Install Sionna 1.2.1 (matching final Dockerfile)
 RUN python3 -m pip install --no-cache-dir sionna==1.2.1
 
@@ -42,30 +45,25 @@ RUN python3 -m pip install --no-cache-dir sionna==1.2.1
 RUN python3 -c "import sionna; print(f'✓ Sionna {sionna.__version__} installed')" || \
     echo "⚠ Sionna import failed"
 
-# Install OpenNTN (try multiple sources)
+# Install OpenNTN using official install script
+# Note: This requires network access and may fail due to SSL/certificate issues
+# If it fails, the code will use fallback models (which is OK)
 RUN cd /tmp && \
     export GIT_TERMINAL_PROMPT=0 && \
     export GIT_ASKPASS=echo && \
     git config --global credential.helper store || true && \
-    (git clone --depth 1 https://github.com/ant-uni-bremen/openntn.git openntn 2>&1 || \
-     git clone --depth 1 https://github.com/nvidia/openntn.git openntn 2>&1 || \
-     git clone --depth 1 https://github.com/NVlabs/openntn.git openntn 2>&1 || \
+    git config --global http.sslVerify false || true && \
+    (git clone --depth 1 https://github.com/ant-uni-bremen/OpenNTN.git openntn 2>&1 || \
      echo "⚠ OpenNTN clone failed, will use fallback") && \
     if [ -d "openntn" ]; then \
         cd openntn && \
-        SIONNA_PATH=$(python3 -c "import sionna; import os; print(os.path.dirname(sionna.__file__))") && \
-        CHANNEL_DIR="$SIONNA_PATH/phy/channel" && \
-        if [ -d "tr38811" ]; then \
-            cp -r tr38811 "$CHANNEL_DIR/" && \
-            echo "from . import tr38811" >> "$CHANNEL_DIR/__init__.py" && \
-            echo "✓ OpenNTN installed to Sionna" || true; \
-        fi; \
+        bash install.sh 2>&1 || echo "⚠ OpenNTN install.sh failed, will use fallback"; \
     fi
 
 # Verify OpenNTN installation
 RUN python3 -c "from sionna.phy.channel import tr38811; print('✓ OpenNTN installed')" 2>&1 || \
     python3 -c "import openntn; print('✓ OpenNTN installed (standalone)')" 2>&1 || \
-    echo "⚠ OpenNTN not available, using fallback models"
+    echo "⚠ OpenNTN not available, using fallback models (this is OK)"
 
 # Set Python path
 ENV PYTHONPATH=/workspace

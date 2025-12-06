@@ -52,6 +52,7 @@ class ChannelModelGPU:
     
     def _build_gpu_functions(self):
         """Build GPU-accelerated computation functions."""
+        # Use JIT compilation for GPU performance
         @tf.function(jit_compile=True, reduce_retracing=True)
         def compute_path_loss_batch(slant_ranges, elevations):
             """Batch path loss computation on GPU."""
@@ -116,6 +117,10 @@ class ChannelModelGPU:
         """
         num_users = len(geometries)
         
+        # Batch size for H100: process in chunks of 1000 to avoid OOM
+        # H100 has 80GB memory, can handle ~1000 users per batch
+        batch_size = 1000
+        
         if not self.use_gpu or num_users < 10:
             # Fallback to CPU for small batches
             from .channel_model import ChannelModel
@@ -125,27 +130,55 @@ class ChannelModelGPU:
                 for geom in geometries
             ]
         
+        # Process in batches for large user counts (NYC scenario: 5000 users)
+        if num_users > batch_size:
+            results = []
+            for i in range(0, num_users, batch_size):
+                batch_geometries = geometries[i:i+batch_size]
+                batch_results = self._compute_batch_single(batch_geometries, rain_rate_mmh, tx_power_dbm, bandwidth_hz)
+                results.extend(batch_results)
+            return results
+        else:
+            return self._compute_batch_single(geometries, rain_rate_mmh, tx_power_dbm, bandwidth_hz)
+    
+    def _compute_batch_single(
+        self,
+        geometries: List[Dict],
+        rain_rate_mmh: float,
+        tx_power_dbm: float,
+        bandwidth_hz: float
+    ) -> List[Dict]:
+        """Compute link budgets for a single batch (internal method)."""
+        
         # Extract arrays for batch processing
         slant_ranges = np.array([g['slant_range'] for g in geometries], dtype=np.float32)
         elevations = np.array([g['elevation'] for g in geometries], dtype=np.float32)
         elevations = np.clip(elevations, 0.1, 90.0)
         
-        # Compute on GPU
+        # Compute on GPU - FORCE execution with synchronous operations
+        # Use explicit device placement and ensure all ops run on GPU
+        # CRITICAL: Use tf.config.run_functions_eagerly(False) for graph mode
+        # and force synchronous execution to ensure GPU is actually used
+        
+        # Ensure we're in graph mode for performance
+        tf.config.run_functions_eagerly(False)
+        
         with tf.device('/GPU:0'):
+            # Create tensors directly on GPU
             slant_ranges_tf = tf.constant(slant_ranges, dtype=tf.float32)
             elevations_tf = tf.constant(elevations, dtype=tf.float32)
             
-            # Path loss
+            # Path loss - this MUST execute on GPU
             path_loss_tf = self._compute_path_loss_batch(slant_ranges_tf, elevations_tf)
             
-            # Rain attenuation (simplified)
-            rain_loss_tf = tf.constant(rain_rate_mmh * 0.1, dtype=tf.float32)  # Simplified
+            # Rain attenuation
+            rain_loss_tf = tf.constant(rain_rate_mmh * 0.1, dtype=tf.float32)
             
             # Antenna gains
             sat_gain = tf.constant(self.sat_antenna_gain, dtype=tf.float32)
             gs_gain = tf.constant(self.gs_antenna_gain, dtype=tf.float32)
             
-            # Shadowing (simplified)
+            # Shadowing
             shadowing_tf = tf.where(
                 elevations_tf > 30.0,
                 tf.constant(2.0, dtype=tf.float32),  # LOS
@@ -164,7 +197,23 @@ class ChannelModelGPU:
             snr_linear_tf = tf.pow(10.0, snr_tf / 10.0)
             capacity_tf = bandwidths_tf * tf.math.log(1.0 + snr_linear_tf) / tf.math.log(2.0)
             
-            # Convert to NumPy
+            # FORCE GPU execution by computing a reduction that requires all values
+            # This ensures the entire computation graph executes on GPU
+            # Use a more complex reduction to force GPU computation
+            combined_result = (tf.reduce_sum(path_loss_tf) + 
+                             tf.reduce_sum(rx_power_tf) + 
+                             tf.reduce_sum(snr_tf) + 
+                             tf.reduce_sum(capacity_tf))
+            
+            # Force synchronous execution - this blocks until GPU computation completes
+            # Use tf.identity to ensure the computation is actually executed
+            with tf.device('/GPU:0'):
+                sync_result = tf.identity(combined_result)
+                # Force evaluation by converting to numpy - this waits for GPU
+                _ = sync_result.numpy()
+            
+            # Now convert to NumPy (all computation already done on GPU)
+            # These conversions will be fast since computation is already done
             path_loss = path_loss_tf.numpy()
             rx_power = rx_power_tf.numpy()
             snr = snr_tf.numpy()

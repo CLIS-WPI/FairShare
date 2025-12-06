@@ -29,42 +29,135 @@ def generate_user_positions(config: ScenarioConfig, seed: Optional[int] = None) 
     center_lon = config.geo['center_lon_deg']
     radius_km = config.geo['radius_km']
     
-    # Convert radius to degrees (approximate)
-    # 1 degree latitude ≈ 111 km
-    radius_deg = radius_km / 111.0
+    # Check if Gaussian 2D distribution is requested
+    user_dist = config.geo.get('user_distribution', {})
+    use_gaussian = user_dist.get('type') == 'gaussian_2d'
     
-    # Generate positions uniformly in circular area
-    for i in range(config.num_users):
-        # Generate random angle and radius
-        angle = np.random.uniform(0, 2 * np.pi)
-        # Use square root for uniform distribution in circle
-        r = np.sqrt(np.random.uniform(0, 1)) * radius_deg
+    if use_gaussian:
+        # Gaussian 2D distribution (for geographic inequality test)
+        gauss_center_lat = user_dist.get('center_lat', center_lat)
+        gauss_center_lon = user_dist.get('center_lon', center_lon)
+        std_lat = user_dist.get('std_lat', 0.15)  # Standard deviation in degrees
+        std_lon = user_dist.get('std_lon', 0.15)
+        urban_threshold_std = user_dist.get('urban_threshold_std', 1.0)
         
-        # Convert to lat/lon
-        lat = center_lat + r * np.cos(angle)
-        lon = center_lon + r * np.sin(angle)
+        # Generate positions using Gaussian 2D
+        for i in range(config.num_users):
+            # Sample from 2D Gaussian
+            lat_offset = np.random.normal(0, std_lat)
+            lon_offset = np.random.normal(0, std_lon)
+            
+            lat = gauss_center_lat + lat_offset
+            lon = gauss_center_lon + lon_offset
+            
+            # Clip to reasonable bounds (within radius)
+            radius_deg = radius_km / 111.0
+            distance_deg = np.sqrt((lat - center_lat)**2 + (lon - center_lon)**2)
+            if distance_deg > radius_deg:
+                # Resample if outside radius
+                lat_offset = np.random.normal(0, std_lat)
+                lon_offset = np.random.normal(0, std_lon)
+                lat = gauss_center_lat + lat_offset
+                lon = gauss_center_lon + lon_offset
+                # Clip to radius
+                if distance_deg > radius_deg:
+                    scale = radius_deg / distance_deg
+                    lat = center_lat + (lat - center_lat) * scale
+                    lon = center_lon + (lon - center_lon) * scale
+            
+            # Classify as urban or rural based on distance from center
+            dist_from_center_std = np.sqrt((lat_offset/std_lat)**2 + (lon_offset/std_lon)**2)
+            is_urban = dist_from_center_std <= urban_threshold_std
+            
+            # Assign operator (for 2 operators: Starlink and OneWeb)
+            if hasattr(config, 'operators') and config.operators:
+                # Equal distribution between operators
+                operator = 'Op_A' if i % 2 == 0 else 'Op_B'
+            else:
+                operator = i % config.num_operators
+            
+            # Assign priority (equal for both operators in this test)
+            priority = 0.5
+            
+            user_dict = {
+                'id': f"u_{i}",
+                'operator': operator,
+                'priority': priority,
+                'lat': float(lat),
+                'lon': float(lon),
+                'is_urban': bool(is_urban),
+                'dist_from_center_deg': float(np.sqrt((lat - gauss_center_lat)**2 + (lon - gauss_center_lon)**2))
+            }
+            users.append(user_dict)
+    else:
+        # Original uniform distribution
+        # Convert radius to degrees (approximate)
+        # 1 degree latitude ≈ 111 km
+        radius_deg = radius_km / 111.0
         
-        # Assign operator (round-robin)
-        operator = i % config.num_operators
+        # Generate positions uniformly in circular area
+        for i in range(config.num_users):
+            # Generate random angle and radius
+            angle = np.random.uniform(0, 2 * np.pi)
+            # Use square root for uniform distribution in circle
+            r = np.sqrt(np.random.uniform(0, 1)) * radius_deg
+            
+            # Convert to lat/lon
+            lat = center_lat + r * np.cos(angle)
+            lon = center_lon + r * np.sin(angle)
+            is_urban = None  # Not applicable for uniform distribution
         
-        # Assign priority (random, but higher for some users)
-        # Use single random call to ensure correct probability distribution:
-        # 20% high, 30% medium, 50% low
-        rand_val = np.random.random()
-        if rand_val < 0.2:  # 20% high priority
-            priority = np.random.uniform(0.7, 1.0)
-        elif rand_val < 0.5:  # 30% medium priority (0.2 to 0.5 = 30% of total)
-            priority = np.random.uniform(0.4, 0.7)
-        else:  # 50% low priority (0.5 to 1.0 = 50% of total)
-            priority = np.random.uniform(0.1, 0.4)
+        # Assign operator based on config
+        # For NYC scenario: 60% Op_A, 30% Op_B, 10% Op_C
+        if hasattr(config, 'operators') and config.operators:
+            # NYC scenario with specific operator distribution
+            rand_op = np.random.random()
+            if rand_op < 0.6:  # 60% Op_A
+                operator = 'Op_A'
+            elif rand_op < 0.9:  # 30% Op_B
+                operator = 'Op_B'
+            else:  # 10% Op_C
+                operator = 'Op_C'
+        else:
+            # Default: round-robin
+            operator = i % config.num_operators
         
-        users.append({
+        # Assign priority based on operator (for NYC scenario)
+        if hasattr(config, 'operators') and config.operators and isinstance(operator, str):
+            # NYC scenario: Op_C has priority=1.0 (critical), Op_A=0.5, Op_B=0.6
+            if operator == 'Op_C':
+                priority = 1.0  # Critical
+            elif operator == 'Op_B':
+                priority = 0.6  # Medium
+            else:  # Op_A
+                priority = 0.5  # Normal
+        else:
+            # Default: random priority distribution
+            rand_val = np.random.random()
+            if rand_val < 0.2:  # 20% high priority
+                priority = np.random.uniform(0.7, 1.0)
+            elif rand_val < 0.5:  # 30% medium priority (0.2 to 0.5 = 30% of total)
+                priority = np.random.uniform(0.4, 0.7)
+            else:  # 50% low priority (0.5 to 1.0 = 50% of total)
+                priority = np.random.uniform(0.1, 0.4)
+        
+        user_dict = {
             'id': f"u_{i}",
             'operator': operator,
             'priority': priority,
             'lat': float(lat),
             'lon': float(lon)
-        })
+        }
+        
+        # Add urban/rural classification for Gaussian distribution
+        if use_gaussian and is_urban is not None:
+            user_dict['is_urban'] = bool(is_urban)
+            # Store distance from center for later analysis
+            if use_gaussian:
+                dist_from_center = np.sqrt((lat - gauss_center_lat)**2 + (lon - gauss_center_lon)**2)
+                user_dict['dist_from_center_deg'] = float(dist_from_center)
+        
+        users.append(user_dict)
     
     return users
 

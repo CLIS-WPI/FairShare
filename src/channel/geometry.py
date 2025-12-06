@@ -163,7 +163,7 @@ class SatelliteGeometry:
         }
     
     def is_visible(self, satellite_position_eci: np.ndarray, dt: datetime, 
-                   min_elevation: float = 5.0) -> bool:
+                   min_elevation: float = 25.0) -> bool:
         """
         Check if satellite is visible above minimum elevation.
         

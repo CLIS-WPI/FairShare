@@ -104,6 +104,15 @@ class ScenarioConfig:
         # Users (if explicitly defined)
         self.users = data.get('users', [])
         
+        # Operators (for NYC scenario)
+        self.operators = data.get('operators', [])
+        
+        # Output config (for NYC scenario)
+        self.output = data.get('output', {})
+        
+        # GPU config (for NYC scenario)
+        self.gpu_config = data.get('gpu_config', {})
+        
         # Channel conditions
         self.channel = data.get('channel', {
             'frequency_hz': self.carrier_frequency_hz,

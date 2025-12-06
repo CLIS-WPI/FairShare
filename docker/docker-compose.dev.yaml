@@ -7,7 +7,7 @@ services:
       dockerfile: docker/Dockerfile.dev
     environment:
       - NVIDIA_VISIBLE_DEVICES=all  # Docker runtime level - makes GPUs visible to container
-      - CUDA_VISIBLE_DEVICES=all  # TensorFlow level - makes GPUs visible to TensorFlow
+      - CUDA_VISIBLE_DEVICES=0,1  # TensorFlow level - explicit GPU IDs (not "all")
       - TF_FORCE_GPU_ALLOW_GROWTH=true  # Avoid OOM by growing memory as needed
       - TF_XLA_FLAGS=--tf_xla_enable_xla_devices --tf_xla_auto_jit=2  # Performance boost
       - PYTHONPATH=/workspace
@@ -20,6 +20,8 @@ services:
       - ../results:/workspace/results
       - ../notebooks:/workspace/notebooks
       - ../tests:/workspace/tests
+      # Root files (for scripts like verify_framework.py)
+      - ../verify_framework.py:/workspace/verify_framework.py
       # Jupyter notebook data
       - jupyter-data:/root/.jupyter
       # Python cache (optional, for faster restarts)

@@ -185,8 +185,10 @@ class Constellation:
                     azimuth = 0.0
                     range_km = distance
                 
-                # Check if satellite is visible (elevation > 10 degrees)
-                if elevation > 10.0:  # Minimum elevation angle
+                # Check if satellite is visible (elevation > 25 degrees)
+                # 25° is standard for urban scenarios (Starlink requirement)
+                # Below 25°, signals are blocked by buildings (urban canyon effect)
+                if elevation > 25.0:  # Minimum elevation angle for usable links
                     coverage[sat.satellite_id].append(user_idx)
                     sat.elevation_deg = elevation
                     sat.azimuth_deg = azimuth

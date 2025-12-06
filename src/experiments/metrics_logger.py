@@ -9,6 +9,9 @@ import pandas as pd
 from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 from src.fairness.metrics import (
     jain_fairness_index,
@@ -46,9 +49,11 @@ class MetricsLogger:
         
         self.metrics_history = []
         self.current_slot = 0
+        self.interference_history = []  # For NYC scenario: interference logging
     
     def update(self, slot: int, users: List[Dict], qos: Dict[str, Dict],
-              allocations: Dict[str, Optional[Tuple[float, float]]], context: Optional[Dict] = None) -> None:
+              allocations: Dict[str, Optional[Tuple[float, float]]], context: Optional[Dict] = None,
+              interference_data: Optional[Dict] = None) -> None:
         """
         Update metrics for a time slot.
         
@@ -112,17 +117,44 @@ class MetricsLogger:
         weighted_fairness = self._compute_weighted_fairness(allocation_array, throughput_array, priorities)
         
         # QoS statistics
-        mean_rate = np.mean(throughput_array) if len(throughput_array) > 0 else 0.0
-        cell_edge_rate = np.percentile(throughput_array, 5) if len(throughput_array) > 0 else 0.0
+        # FIXED: Only compute mean_rate from allocated users (allocation > 0)
+        # This ensures Priority policy with 50/500 users has correct mean rate
+        allocated_mask = allocation_array > 0
+        if np.any(allocated_mask):
+            allocated_throughputs = throughput_array[allocated_mask]
+            mean_rate = np.mean(allocated_throughputs) if len(allocated_throughputs) > 0 else 0.0
+            cell_edge_rate = np.percentile(allocated_throughputs, 5) if len(allocated_throughputs) > 0 else 0.0
+        else:
+            # No allocations - all zeros
+            mean_rate = 0.0
+            cell_edge_rate = 0.0
         
         # Operator imbalance (Gini coefficient across operators)
         operator_imbalance = self._compute_operator_imbalance(allocation_array, operators)
+        
+        # Urban/Rural Jain Index (for geographic inequality test)
+        urban_jain = None
+        rural_jain = None
+        if users and 'is_urban' in users[0]:
+            # Separate users into urban and rural
+            urban_mask = np.array([u.get('is_urban', False) for u in users])
+            rural_mask = ~urban_mask
+            
+            if np.any(urban_mask):
+                urban_allocations = allocation_array[urban_mask]
+                urban_jain = jain_fairness_index(urban_allocations) if len(urban_allocations) > 0 else 0.0
+            
+            if np.any(rural_mask):
+                rural_allocations = allocation_array[rural_mask]
+                rural_jain = jain_fairness_index(rural_allocations) if len(rural_allocations) > 0 else 0.0
         
         # Record metrics
         metrics = {
             'slot': slot,
             'policy': self.policy_name,
             'jain': float(jain),
+            'urban_jain': float(urban_jain) if urban_jain is not None else None,
+            'rural_jain': float(rural_jain) if rural_jain is not None else None,
             'alpha_0': float(alpha_0),
             'alpha_1': float(alpha_1),
             'alpha_2': float(alpha_2),
@@ -138,6 +170,10 @@ class MetricsLogger:
         }
         
         self.metrics_history.append(metrics)
+        
+        # Store interference data if provided (for NYC heatmap)
+        if interference_data is not None:
+            self.interference_history.append(interference_data)
     
     def _compute_weighted_fairness(self, allocations: np.ndarray,
                                    throughputs: np.ndarray,
@@ -261,6 +297,14 @@ class MetricsLogger:
         filepath = os.path.join(output_dir, filename)
         
         df.to_csv(filepath, index=False)
+        
+        # Save interference data if available (for NYC heatmap)
+        if hasattr(self, 'interference_history') and len(self.interference_history) > 0:
+            import json
+            interference_filepath = filepath.replace('.csv', '_interference.json')
+            with open(interference_filepath, 'w') as f:
+                json.dump(self.interference_history, f, indent=2)
+            logger.info(f"Interference data saved to: {interference_filepath}")
         
         return filepath
     

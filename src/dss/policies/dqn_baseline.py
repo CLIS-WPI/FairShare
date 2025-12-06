@@ -192,7 +192,23 @@ class DQNPolicy:
         user_q_values = np.max(q_values_batch, axis=1)
         sorted_indices = np.argsort(-user_q_values)  # Descending order
         
+        # FIXED: Check available spectrum capacity BEFORE allocating
+        # This prevents wasted allocation attempts when spectrum is exhausted
+        available_channels = self.spectrum_env.get_available_channels(bandwidth_hz)
+        max_allocatable_users = len(available_channels)
+        
+        # DEBUG: Track allocation attempts
+        successful_allocations = 0
+        failed_allocations = 0
+        
         for idx in sorted_indices:
+            # FIXED: Stop allocating if spectrum is exhausted
+            if successful_allocations >= max_allocatable_users:
+                # Spectrum exhausted - mark remaining users as not allocated
+                user_id = user_ids[idx]
+                allocations[user_id] = None
+                failed_allocations += 1
+                continue
             user_id = user_ids[idx]
             action = actions[idx]
             
@@ -215,11 +231,20 @@ class DQNPolicy:
                 
                 if allocation:
                     allocations[user_id] = allocation
+                    successful_allocations += 1
+                else:
+                    allocations[user_id] = None
+                    failed_allocations += 1
             except Exception as e:
                 logger.debug(f"Allocation failed for {user_id}: {e}")
                 allocations[user_id] = None
+                failed_allocations += 1
         
-        logger.debug(f"DQN allocated spectrum to {len([a for a in allocations.values() if a])}/{len(user_ids)} users")
+        # DEBUG: Log allocation statistics
+        total_users = len(user_ids)
+        logger.info(f"DQN allocation: {successful_allocations}/{total_users} successful, "
+                   f"{failed_allocations} failed, Q-value range: [{np.min(user_q_values):.3f}, {np.max(user_q_values):.3f}]")
+        
         return allocations
     
     def store_experience(self, state: np.ndarray, action: int, reward: float, 
