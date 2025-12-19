@@ -1,79 +1,60 @@
-# Python
+# Temporary test scripts
+test_*.py
+run_*.py
+debug_*.py
+quota_sensitivity*.py
+create_*.py
+check_*.py
+verify_*.py
+benchmark_*.py
+
+# Temporary shell scripts
+run_*.sh
+
+# Logs
+*.log
+*.txt
+!README*.txt
+!requirements.txt
+
+# Python cache
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
 # Virtual environments
 venv/
 env/
 ENV/
-.venv
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb_checkpoints
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 
-# Testing
-.pytest_cache/
-.coverage
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Coverage
 htmlcov/
-.tox/
-.hypothesis/
+.coverage
+.coverage.*
 
-# Results and outputs
-results/*.csv
-results/*.json
-plots/*.pdf
-plots/*.png
-plots/*.jpg
-
-# Data (keep structure, ignore large files)
-data/tle/*.txt
-!data/tle/.gitkeep
-data/traffic_patterns.npy
-
-# Docker
-*.log
+# Build
+build/
+dist/
+*.egg-info/
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Temporary files
-*.tmp
-*.bak
-*.swp
-
-# Environment variables
-.env
-.env.local
-
-# Large files
-*.h5
-*.hdf5
-*.pkl
-*.pickle
+# Keep important results
+!results/
+!paper_charts/
+!archive/
+echo "results/**/*.json" >> .gitignore
