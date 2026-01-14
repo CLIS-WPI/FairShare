@@ -1,0 +1,98 @@
+scenario_name: "fairshare_fast"
+description: "Fast version with fewer users for quick testing"
+
+# Simulation parameters - REDUCED for speed
+sim_time_s: 30.0
+slot_duration_s: 0.05
+num_users: 200  # Reduced from 1000
+num_operators: 3
+
+# Frequency configuration
+carrier_frequency_hz: 20.0e9  # Ka-band
+bandwidth_hz: 300.0e6  # 300 MHz
+frequency_range_hz: [19.9e9, 20.0e9]
+
+# Traffic model
+traffic_model:
+  type: poisson
+  lambda_per_user: 2.0
+
+# Geographic configuration (NYC area)
+geo:
+  lat_range: [40.50, 41.20]
+  lon_range: [-74.50, -73.50]
+  center_lat_deg: 40.7128
+  center_lon_deg: -74.0060
+  radius_km: 150.0
+  user_distribution:
+    type: population_based
+    center_lat: 40.7128
+    center_lon: -74.0060
+    urban_ratio: 0.50
+    suburban_ratio: 0.20
+    rural_ratio: 0.30
+
+# Operators configuration
+operators:
+  - id: "Op_A"
+    name: "Starlink"
+    type: "starlink_shell1"
+    altitude_km: 550.0
+    inclination_deg: 53.0
+    priority: 0.5
+    bandwidth_mhz: 50
+    tle_file: "data/tle/starlink_shell1.tle"
+    max_satellites: 200
+    
+  - id: "Op_B"
+    name: "OneWeb"
+    type: "oneweb"
+    altitude_km: 1200.0
+    inclination_deg: 87.4
+    priority: 0.5
+    bandwidth_mhz: 30
+    tle_file: "data/tle/oneweb.tle"
+    max_satellites: 100
+    
+  - id: "Op_C"
+    name: "Kuiper"
+    type: "kuiper"
+    altitude_km: 630.0
+    inclination_deg: 51.9
+    priority: 0.5
+    bandwidth_mhz: 20
+    tle_file: "data/tle/starlink_shell1.tle"
+    max_satellites: 50
+
+# Channel configuration
+channel:
+  model: "openntn"
+  frequency_hz: 20.0e9
+  bandwidth: 300.0e6
+  satellite_tx_power: 30
+  satellite_antenna_gain: 34
+  ut_antenna_gain: 0
+  noise_figure: 7
+  rain_rate_mmh: 2.0
+  temperature_k: 295.0
+  min_elevation_deg: 10.0
+
+# Ground stations
+ground_stations:
+  - [40.7128, -74.0060]
+
+# Policy
+policy: "priority"
+
+# FairShare configuration
+fairshare_config:
+  urban_quota: 0.40
+  suburban_quota: 0.25
+  rural_quota: 0.35
+  efficiency_weight: 0.3
+
+# Outputs
+output:
+  save_interference_heatmap: false
+  save_fairness_plots: false
+

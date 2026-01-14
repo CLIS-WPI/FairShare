@@ -1,0 +1,86 @@
+scenario_name: "geographic_fairness_openntn"
+description: "Geographic Fairness Test with OpenNTN - Test geographic unfairness using realistic 3GPP channel models"
+
+# Simulation parameters
+sim_time_s: 60.0
+slot_duration_s: 0.05
+num_users: 1000  # Reduced for faster test (will scale to 5000 later)
+num_operators: 3
+
+# Frequency configuration
+carrier_frequency_hz: 20.0e9  # Ka-band برای استفاده واقعی از OpenNTN
+bandwidth_hz: 300.0e6  # افزایش برای allocation rate بهتر
+frequency_range_hz: [19.9e9, 20.0e9]  # 100 MHz total
+
+# Traffic model
+traffic_model:
+  type: poisson
+  lambda_per_user: 2.0
+
+# Geographic configuration (NYC area)
+geo:
+  lat_range: [40.50, 41.20]  # Extended range: NYC to rural upstate
+  lon_range: [-74.50, -73.50]  # Extended range: includes rural areas
+  center_lat_deg: 40.7128  # Manhattan center
+  center_lon_deg: -74.0060  # Manhattan center
+  radius_km: 150.0  # Extended radius to include rural areas
+  user_distribution:
+    type: population_based  # Not uniform!
+    center_lat: 40.7128
+    center_lon: -74.0060
+    urban_ratio: 0.50
+    suburban_ratio: 0.20
+    rural_ratio: 0.30  # بیشتر برای دیدن unfairness
+
+# Operators configuration
+operators:
+  - id: "Op_A"
+    name: "Starlink"
+    type: "starlink_shell1"
+    altitude_km: 550.0
+    inclination_deg: 53.0
+    priority: 0.5
+    bandwidth_mhz: 50  # Equal share: 100 MHz / 2 = 50 MHz
+    tle_file: "data/tle/starlink_shell1.tle"
+    max_satellites: 200  # subset for faster sim
+    
+  - id: "Op_B"
+    name: "OneWeb"
+    type: "oneweb"
+    altitude_km: 1200.0
+    inclination_deg: 87.4
+    priority: 0.5
+    bandwidth_mhz: 30  # 30% of 100 MHz
+    tle_file: "data/tle/oneweb.tle"
+    max_satellites: 100
+    
+  - id: "Op_C"
+    name: "Kuiper"
+    type: "kuiper"
+    altitude_km: 630.0
+    inclination_deg: 51.9
+    priority: 0.5
+    bandwidth_mhz: 20  # 20% of 100 MHz
+    tle_file: "data/tle/starlink_shell1.tle"  # Use Starlink TLE as fallback
+    max_satellites: 50
+
+# Channel configuration
+channel:
+  model: "openntn"
+  frequency_hz: 20.0e9  # Ka-band
+  bandwidth: 100.0e6
+  satellite_tx_power: 30  # dBW
+  satellite_antenna_gain: 34  # dBi
+  ut_antenna_gain: 0  # dBi
+  noise_figure: 7  # dB
+  rain_rate_mmh: 2.0
+  temperature_k: 295.0
+  min_elevation_deg: 10.0  # Lower for rural users
+
+# Ground stations
+ground_stations:
+  - [40.7128, -74.0060]  # Manhattan
+
+# Policy
+policy: "priority"
+

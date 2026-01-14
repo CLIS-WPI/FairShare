@@ -1,0 +1,21 @@
+% Inverted Elevation Study Results
+% Demonstrates that unfairness comes from POLICY, not GEOMETRY
+\begin{table}[t]
+\centering
+\caption{Sensitivity Analysis: Policy-Induced vs Geometry-Induced Disparity. Standard mode gives urban users a $+4.8$~dB SNR advantage; inverted mode reverses this, giving rural users the SNR advantage. Demand Biased policy maintains urban bias ($\Delta_{\text{geo}} > 1$) even when rural users have superior channel conditions, demonstrating policy-induced unfairness.}
+\label{tab:inverted-elevation}
+\small
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Policy} & \textbf{Standard} ($\Delta_{\text{geo}}$) & \textbf{Inverted} ($\Delta_{\text{geo}}$) \\
+ & \footnotesize{Urban SNR+} & \footnotesize{Rural SNR+} \\
+\midrule
+SNR Priority & 1.49$\pm$0.5$\times$ & 0.76$\pm$0.2$\times$ \\
+Demand Proportional & 1.37$\pm$0.4$\times$ & 1.22$\pm$0.4$\times$ \\
+Demand Biased$^\dagger$ & \textbf{3.38$\pm$2.7$\times$} & \textbf{2.11$\pm$1.9$\times$} \\
+\textbf{FairShare} & \textbf{0.71$\times$} & \textbf{0.71$\times$} \\
+\bottomrule
+\end{tabular}
+\vspace{1mm}
+\par\footnotesize{$^\dagger$Still favors urban ($\Delta_{\text{geo}} > 1$) even when rural has better SNR.}
+\end{table}

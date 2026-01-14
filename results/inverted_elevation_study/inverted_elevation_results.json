@@ -1,0 +1,238 @@
+{
+  "standard": {
+    "snr_priority": {
+      "mean": {
+        "urban_rate": 0.3636000000000001,
+        "suburban_rate": 0.35000000000000014,
+        "rural_rate": 0.2606666666666667,
+        "gap": 1.486703463203463,
+        "urban_snr": -6.73592290833044,
+        "rural_snr": -11.462810822567228,
+        "snr_gap": 4.726887914236787,
+        "urban_allocated": 18.18,
+        "rural_allocated": 7.82,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.04131634059303897,
+        "suburban_rate": 0.10099504938362078,
+        "rural_rate": 0.057999999999999996,
+        "gap": 0.4558424556122014,
+        "urban_snr": 0.048043596748696155,
+        "rural_snr": 0.17048078397095093,
+        "snr_gap": 0.1840376727732334,
+        "urban_allocated": 2.0658170296519485,
+        "rural_allocated": 1.7399999999999998,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "demand_proportional": {
+      "mean": {
+        "urban_rate": 0.3683999999999999,
+        "suburban_rate": 0.306,
+        "rural_rate": 0.282,
+        "gap": 1.3725047619047621,
+        "urban_snr": -6.738774495653599,
+        "rural_snr": -11.554135401938085,
+        "snr_gap": 4.815360906284487,
+        "urban_allocated": 18.42,
+        "rural_allocated": 8.46,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.035120364462801354,
+        "suburban_rate": 0.08224354077980836,
+        "rural_rate": 0.04953562130202645,
+        "gap": 0.42410292889590245,
+        "urban_snr": 0.045970495441316164,
+        "rural_snr": 0.19810050609880006,
+        "snr_gap": 0.20471262207821359,
+        "urban_allocated": 1.7560182231400674,
+        "rural_allocated": 1.486068639060794,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "demand_biased": {
+      "mean": {
+        "urban_rate": 0.4528000000000001,
+        "suburban_rate": 0.256,
+        "rural_rate": 0.17466666666666664,
+        "gap": 3.3769952380952377,
+        "urban_snr": -6.744139593867796,
+        "rural_snr": -11.471817442990409,
+        "snr_gap": 4.727677849122612,
+        "urban_allocated": 22.64,
+        "rural_allocated": 5.24,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.04467840641741825,
+        "suburban_rate": 0.0846404158779953,
+        "rural_rate": 0.06482797749943049,
+        "gap": 2.684574772144289,
+        "urban_snr": 0.04591357144436567,
+        "rural_snr": 0.24648523348879295,
+        "snr_gap": 0.24154151631192966,
+        "urban_allocated": 2.2339203208709124,
+        "rural_allocated": 1.9448393249829148,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "fairshare": {
+      "mean": {
+        "urban_rate": 0.26,
+        "suburban_rate": 0.3999999999999999,
+        "rural_rate": 0.36666666666666664,
+        "gap": 0.7090909090909092,
+        "urban_snr": -6.7347787731142645,
+        "rural_snr": -11.561980531167778,
+        "snr_gap": 4.827201758053512,
+        "urban_allocated": 13.0,
+        "rural_allocated": 11.0,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.0,
+        "suburban_rate": 1.1102230246251565e-16,
+        "rural_rate": 0.0,
+        "gap": 0.0,
+        "urban_snr": 0.04448505271227728,
+        "rural_snr": 0.1824551966843089,
+        "snr_gap": 0.18123959256201133,
+        "urban_allocated": 0.0,
+        "rural_allocated": 0.0,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    }
+  },
+  "inverted": {
+    "snr_priority": {
+      "mean": {
+        "urban_rate": 0.28400000000000003,
+        "suburban_rate": 0.353,
+        "rural_rate": 0.39133333333333326,
+        "gap": 0.7584996669996669,
+        "urban_snr": -11.493028400684622,
+        "rural_snr": -6.740412261664591,
+        "snr_gap": -4.75261613902003,
+        "urban_allocated": 14.2,
+        "rural_allocated": 11.74,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.048662100242385764,
+        "suburban_rate": 0.10266937225872183,
+        "rural_rate": 0.06825117011613957,
+        "gap": 0.21846326097401755,
+        "urban_snr": 0.15848950639045936,
+        "rural_snr": 0.062782592083383,
+        "snr_gap": 0.1582364913165867,
+        "urban_allocated": 2.4331050121192876,
+        "rural_allocated": 2.047535103484187,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "demand_proportional": {
+      "mean": {
+        "urban_rate": 0.34320000000000006,
+        "suburban_rate": 0.3390000000000001,
+        "rural_rate": 0.302,
+        "gap": 1.2233697635697636,
+        "urban_snr": -11.525398442469985,
+        "rural_snr": -6.731475118846491,
+        "snr_gap": -4.793923323623495,
+        "urban_allocated": 17.16,
+        "rural_allocated": 9.06,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.037172032497564615,
+        "suburban_rate": 0.09658674857349739,
+        "rural_rate": 0.07036729038094017,
+        "gap": 0.40712406262846257,
+        "urban_snr": 0.16905214433780952,
+        "rural_snr": 0.05391701363395227,
+        "snr_gap": 0.1798797935961374,
+        "urban_allocated": 1.858601624878231,
+        "rural_allocated": 2.1110187114282053,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "demand_biased": {
+      "mean": {
+        "urban_rate": 0.39799999999999996,
+        "suburban_rate": 0.298,
+        "rural_rate": 0.23800000000000002,
+        "gap": 2.112428571428571,
+        "urban_snr": -11.49669576717765,
+        "rural_snr": -6.730769940457011,
+        "snr_gap": -4.76592582672064,
+        "urban_allocated": 19.9,
+        "rural_allocated": 7.14,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.0452990066116245,
+        "suburban_rate": 0.08482924024179397,
+        "rural_rate": 0.0763063999063425,
+        "gap": 1.8830701592053853,
+        "urban_snr": 0.16511316018441405,
+        "rural_snr": 0.05603890071247877,
+        "snr_gap": 0.1813026839690998,
+        "urban_allocated": 2.264950330581225,
+        "rural_allocated": 2.289191997190275,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    },
+    "fairshare": {
+      "mean": {
+        "urban_rate": 0.26,
+        "suburban_rate": 0.3999999999999999,
+        "rural_rate": 0.36666666666666664,
+        "gap": 0.7090909090909092,
+        "urban_snr": -11.511998573273598,
+        "rural_snr": -6.736426755011279,
+        "snr_gap": -4.775571818262319,
+        "urban_allocated": 13.0,
+        "rural_allocated": 11.0,
+        "total_urban": 50.0,
+        "total_rural": 30.0
+      },
+      "std": {
+        "urban_rate": 0.0,
+        "suburban_rate": 1.1102230246251565e-16,
+        "rural_rate": 0.0,
+        "gap": 0.0,
+        "urban_snr": 0.15711000480223575,
+        "rural_snr": 0.0478044097973406,
+        "snr_gap": 0.17011237050146602,
+        "urban_allocated": 0.0,
+        "rural_allocated": 0.0,
+        "total_urban": 0.0,
+        "total_rural": 0.0
+      },
+      "n_runs": 50
+    }
+  }
+}

@@ -1,60 +1,123 @@
-# Temporary test scripts
-test_*.py
-run_*.py
-debug_*.py
-quota_sensitivity*.py
-create_*.py
-check_*.py
-verify_*.py
-benchmark_*.py
-
-# Temporary shell scripts
-run_*.sh
-
-# Logs
-*.log
-*.txt
-!README*.txt
-!requirements.txt
-
-# Python cache
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
+
+# Distribution / packaging
 .Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
-# Virtual environments
-venv/
-env/
-ENV/
+# PyInstaller
+*.manifest
+*.spec
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
 
-# Jupyter
-.ipynb_checkpoints/
-*.ipynb
-
-# Coverage
+# Unit test / coverage reports
 htmlcov/
+.tox/
+.nox/
 .coverage
 .coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
 
-# Build
-build/
-dist/
-*.egg-info/
+# Translations
+*.mo
+*.pot
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.devcontainer/
+.cursor-docker-config.json
 
 # OS
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log
+logs/
+
+# TensorFlow/Keras
+*.h5
+*.keras
+checkpoints/
+
+# Data files (keep structure, not data)
+data/tle/*.tle
+data/population/*.csv
+!data/.gitkeep
+
+# Temporary results (keep final results)
+results/temp/
+results/*.csv
+results/*.txt
+results/*.json
+
 # Keep important results
-!results/
-!paper_charts/
-!archive/
-echo "results/**/*.json" >> .gitignore
+!results/figures/
+!results/paper_tables/
+!results/inverted_elevation_study/
+
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb

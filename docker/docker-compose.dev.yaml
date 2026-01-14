@@ -2,6 +2,7 @@ services:
   fairness-dev:
     image: leo-fuzzy-fairness:dev
     container_name: fairness-dev
+    runtime: nvidia  # CRITICAL: Required for GPU access
     build:
       context: ..
       dockerfile: docker/Dockerfile.dev

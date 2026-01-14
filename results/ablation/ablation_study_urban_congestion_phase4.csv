@@ -1,7 +1,0 @@
-configuration,n_inputs,inputs,jain_mean,jain_std,fuzzy_fairness_mean,fuzzy_fairness_std,alpha_fairness_mean,gini_mean
-Full (7 inputs),7,"throughput,latency,outage,priority,doppler,elevation,beam_load",0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
-Core QoS (4),4,"throughput,latency,outage,priority",0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
-No NTN-specific,5,"throughput,latency,outage,priority,beam_load",0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
-NTN-only,4,"doppler,elevation,beam_load,priority",0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
-No QoS,4,"priority,doppler,elevation,beam_load",0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
-Priority only,1,priority,0.0025,0.0,0.5191228845801004,0.0,0.33850627513777615,0.0
