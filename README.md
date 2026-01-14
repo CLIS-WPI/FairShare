@@ -1,10 +1,10 @@
-# FairShare: Geographic-Aware Spectrum Allocation for Continental-Scale Multi-Operator LEO Networks
+# FairShare: Auditable Geographic Fairness for Multi-Operator LEO Spectrum Sharing
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![TensorFlow](https://img.shields.io/badge/TensorFlow-2.16+-orange.svg)](https://www.tensorflow.org/)
 
-> **A simulation framework for evaluating geographic fairness in LEO satellite spectrum allocation, demonstrating that conventional allocation policies systematically disadvantage rural users.**
+> **A simulation framework for evaluating geographic fairness in LEO satellite spectrum allocation, demonstrating that allocation policies systematically disadvantage rural users.**
 
 <p align="center">
   <img src="results/figures/fig1_user_distribution.png" width="45%"/>
