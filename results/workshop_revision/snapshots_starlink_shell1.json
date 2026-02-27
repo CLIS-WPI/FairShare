@@ -1,0 +1,862 @@
+[
+  {
+    "equal_static": {
+      "rho_urban": 0.353,
+      "rho_suburban": 0.3503,
+      "rho_rural": 0.3514666666666667,
+      "delta_geo": 1.010848262973619,
+      "avg_sinr_db": 11.305007048953534,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.46211185210839
+    },
+    "snr_priority": {
+      "rho_urban": 0.38236,
+      "rho_suburban": 0.3478,
+      "rho_rural": 0.30419999999999997,
+      "delta_geo": 1.264191181011421,
+      "avg_sinr_db": 21.97651370807072,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.78885150823096
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38660000000000005,
+      "rho_suburban": 0.34909999999999997,
+      "rho_rural": 0.2962666666666667,
+      "delta_geo": 1.3104164553011273,
+      "avg_sinr_db": 12.511010614025201,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.851953005905024
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 21.408018573558945,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 42.48922261495283
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 40.44188867717081,
+      "avg_sinr_all": 11.356691794034782
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.34972000000000003,
+      "rho_suburban": 0.3547,
+      "rho_rural": 0.354,
+      "delta_geo": 0.9934055916717276,
+      "avg_sinr_db": 15.648656052906597,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.290610273746324
+    },
+    "snr_priority": {
+      "rho_urban": 0.33024000000000003,
+      "rho_suburban": 0.41470000000000007,
+      "rho_rural": 0.3464666666666667,
+      "delta_geo": 0.9621971994145853,
+      "avg_sinr_db": 31.773813759350904,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.27883710418456
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38647999999999993,
+      "rho_suburban": 0.3461,
+      "rho_rural": 0.29846666666666666,
+      "delta_geo": 1.3041993648165198,
+      "avg_sinr_db": 17.431279833644492,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.695409315471665
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 31.46709736546443,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 43.2233544539789
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 41.29004739991028,
+      "avg_sinr_all": 15.669254489687377
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35011999999999993,
+      "rho_suburban": 0.3506000000000001,
+      "rho_rural": 0.3560666666666667,
+      "delta_geo": 0.9881188111502114,
+      "avg_sinr_db": 22.60657599609814,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.40829663108584
+    },
+    "snr_priority": {
+      "rho_urban": 0.44764000000000004,
+      "rho_suburban": 0.46190000000000003,
+      "rho_rural": 0.11933333333333333,
+      "delta_geo": 3.8744544019640927,
+      "avg_sinr_db": 35.905100458971646,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 45.67488779797997
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38780000000000003,
+      "rho_suburban": 0.3471000000000001,
+      "rho_rural": 0.29560000000000003,
+      "delta_geo": 1.3203066073470477,
+      "avg_sinr_db": 24.294002769590556,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.87315978510959
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 34.66427161091423,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 45.50812564911647
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 42.46088168427907,
+      "avg_sinr_all": 22.689579010446696
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35119999999999996,
+      "rho_suburban": 0.34630000000000005,
+      "rho_rural": 0.3571333333333333,
+      "delta_geo": 0.9888688628849137,
+      "avg_sinr_db": 24.071775968136034,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.92357444331291
+    },
+    "snr_priority": {
+      "rho_urban": 0.38692,
+      "rho_suburban": 0.395,
+      "rho_rural": 0.26513333333333333,
+      "delta_geo": 1.4760558039661573,
+      "avg_sinr_db": 35.40436038714403,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.650586474171966
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38368,
+      "rho_suburban": 0.3538,
+      "rho_rural": 0.298,
+      "delta_geo": 1.2951261626039547,
+      "avg_sinr_db": 25.23416734721075,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.3786548717024
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 35.002811681273776,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 47.244187995180894
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.94023388263391,
+      "avg_sinr_all": 24.074275368275217
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35224000000000005,
+      "rho_suburban": 0.34940000000000004,
+      "rho_rural": 0.3533333333333333,
+      "delta_geo": 1.0039473440500306,
+      "avg_sinr_db": 26.974196533077503,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.5900395542171
+    },
+    "snr_priority": {
+      "rho_urban": 0.4282000000000001,
+      "rho_suburban": 0.4325,
+      "rho_rural": 0.17133333333333334,
+      "delta_geo": 2.5497548565589683,
+      "avg_sinr_db": 37.85546621394465,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.175962340078634
+    },
+    "demand_proportional": {
+      "rho_urban": 0.39056,
+      "rho_suburban": 0.3455,
+      "rho_rural": 0.2920666666666667,
+      "delta_geo": 1.3493774320174965,
+      "avg_sinr_db": 28.25322077450142,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.020596939897516
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 37.065227712631675,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.638737944021976
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.59259187998685,
+      "avg_sinr_all": 27.07510248629408
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35303999999999996,
+      "rho_suburban": 0.3594,
+      "rho_rural": 0.3453333333333333,
+      "delta_geo": 1.0267242509478145,
+      "avg_sinr_db": 27.893663820537736,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.42415924739072
+    },
+    "snr_priority": {
+      "rho_urban": 0.44107999999999997,
+      "rho_suburban": 0.40920000000000006,
+      "rho_rural": 0.1654,
+      "delta_geo": 2.6995011373347113,
+      "avg_sinr_db": 38.347579758438194,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 46.905209489362925
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38628,
+      "rho_suburban": 0.3504,
+      "rho_rural": 0.2959333333333333,
+      "delta_geo": 1.316963678273284,
+      "avg_sinr_db": 29.078971030771836,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.79877707377603
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 37.441603734565916,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.35953597031337
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.40010833828397,
+      "avg_sinr_all": 27.870965728996374
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35308,
+      "rho_suburban": 0.35050000000000003,
+      "rho_rural": 0.35120000000000007,
+      "delta_geo": 1.010327641685557,
+      "avg_sinr_db": 27.447043336974925,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.456140990948555
+    },
+    "snr_priority": {
+      "rho_urban": 0.42432,
+      "rho_suburban": 0.36269999999999997,
+      "rho_rural": 0.22433333333333333,
+      "delta_geo": 1.919899550856283,
+      "avg_sinr_db": 37.82434004354198,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.219110019978636
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38548000000000004,
+      "rho_suburban": 0.34730000000000005,
+      "rho_rural": 0.29933333333333334,
+      "delta_geo": 1.3002052214387774,
+      "avg_sinr_db": 28.551725680318736,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.80753580770179
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 37.19849633963282,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.71857992474318
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.4371583904571,
+      "avg_sinr_all": 27.390349303799198
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35324,
+      "rho_suburban": 0.3514,
+      "rho_rural": 0.35033333333333333,
+      "delta_geo": 1.0130215230477488,
+      "avg_sinr_db": 22.829282657826408,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.450978379568866
+    },
+    "snr_priority": {
+      "rho_urban": 0.38632000000000005,
+      "rho_suburban": 0.39740000000000003,
+      "rho_rural": 0.2645333333333333,
+      "delta_geo": 1.473474456787047,
+      "avg_sinr_db": 36.734884903287586,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 45.543039722618026
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38432,
+      "rho_suburban": 0.3459,
+      "rho_rural": 0.30219999999999997,
+      "delta_geo": 1.282604334320642,
+      "avg_sinr_db": 24.308508807645698,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.862596730383366
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 36.20096854526619,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 45.35995718383937
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 42.478477417778706,
+      "avg_sinr_all": 22.907721185101778
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.34883999999999993,
+      "rho_suburban": 0.35369999999999996,
+      "rho_rural": 0.3561333333333333,
+      "delta_geo": 0.9867964524132222,
+      "avg_sinr_db": 13.440957729427073,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.72335429530439
+    },
+    "snr_priority": {
+      "rho_urban": 0.34252000000000005,
+      "rho_suburban": 0.3419,
+      "rho_rural": 0.37453333333333333,
+      "delta_geo": 0.9193517813438925,
+      "avg_sinr_db": 24.44397415106115,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.152812423271854
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38880000000000003,
+      "rho_suburban": 0.3431,
+      "rho_rural": 0.29660000000000003,
+      "delta_geo": 1.316135930166763,
+      "avg_sinr_db": 14.310221525030737,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.08082033318512
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 24.21763582493772,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 42.95414890348453
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 40.74741105499606,
+      "avg_sinr_all": 13.396340336903647
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.34948,
+      "rho_suburban": 0.35619999999999996,
+      "rho_rural": 0.35340000000000005,
+      "delta_geo": 0.996269557203813,
+      "avg_sinr_db": 10.158024979361969,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.51465984880554
+    },
+    "snr_priority": {
+      "rho_urban": 0.3633199999999999,
+      "rho_suburban": 0.3179,
+      "rho_rural": 0.35586666666666666,
+      "delta_geo": 1.0243756737201408,
+      "avg_sinr_db": 20.00813824183757,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.059649841953735
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38888,
+      "rho_suburban": 0.3417000000000001,
+      "rho_rural": 0.2974,
+      "delta_geo": 1.3202503620100996,
+      "avg_sinr_db": 10.978487951193575,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.86377972257441
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 19.7131532996769,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 42.797983523767435
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 40.54171152171639,
+      "avg_sinr_all": 10.125860946508904
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.34891999999999995,
+      "rho_suburban": 0.35979999999999995,
+      "rho_rural": 0.3519333333333334,
+      "delta_geo": 0.9970861339207899,
+      "avg_sinr_db": 18.047358918613106,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.8742000364067
+    },
+    "snr_priority": {
+      "rho_urban": 0.36596000000000006,
+      "rho_suburban": 0.45000000000000007,
+      "rho_rural": 0.26339999999999997,
+      "delta_geo": 1.413757744805644,
+      "avg_sinr_db": 33.6999853762904,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.405053357225704
+    },
+    "demand_proportional": {
+      "rho_urban": 0.3842000000000001,
+      "rho_suburban": 0.34590000000000004,
+      "rho_rural": 0.3024,
+      "delta_geo": 1.2775955068584575,
+      "avg_sinr_db": 19.58021887921675,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.24466181961997
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 33.14981703991018,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 44.366800091975556
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 41.86884515380459,
+      "avg_sinr_all": 17.908769835151737
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35056,
+      "rho_suburban": 0.3596000000000001,
+      "rho_rural": 0.3493333333333334,
+      "delta_geo": 1.008907695578394,
+      "avg_sinr_db": 24.16242512963846,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.031198825537686
+    },
+    "snr_priority": {
+      "rho_urban": 0.43284000000000006,
+      "rho_suburban": 0.4106,
+      "rho_rural": 0.17819999999999997,
+      "delta_geo": 2.466292427000505,
+      "avg_sinr_db": 35.96114955549841,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 46.49692093935696
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38688,
+      "rho_suburban": 0.352,
+      "rho_rural": 0.29386666666666666,
+      "delta_geo": 1.3275956795100314,
+      "avg_sinr_db": 25.405986095542175,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.39692145824667
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 35.11655075916296,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.136016653909536
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.006850355856606,
+      "avg_sinr_all": 24.08754084667995
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.3546000000000001,
+      "rho_suburban": 0.3549,
+      "rho_rural": 0.3457333333333333,
+      "delta_geo": 1.0286424643924004,
+      "avg_sinr_db": 25.221422057092692,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.58731936232153
+    },
+    "snr_priority": {
+      "rho_urban": 0.40112000000000003,
+      "rho_suburban": 0.37189999999999995,
+      "rho_rural": 0.2568666666666667,
+      "delta_geo": 1.5780470162832811,
+      "avg_sinr_db": 35.83061247238082,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.11171150931651
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38732,
+      "rho_suburban": 0.34529999999999994,
+      "rho_rural": 0.2976,
+      "delta_geo": 1.3103202952916897,
+      "avg_sinr_db": 26.250912748538532,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.98118873000786
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 35.366081221328315,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.73214106582511
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.58281493902845,
+      "avg_sinr_all": 25.220959257441105
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.3528,
+      "rho_suburban": 0.35100000000000003,
+      "rho_rural": 0.3513333333333334,
+      "delta_geo": 1.0108804894889494,
+      "avg_sinr_db": 27.95190272085695,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.561746095327464
+    },
+    "snr_priority": {
+      "rho_urban": 0.45576,
+      "rho_suburban": 0.42140000000000005,
+      "rho_rural": 0.1328,
+      "delta_geo": 3.4958219819956775,
+      "avg_sinr_db": 39.10996139070792,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.11183139556221
+    },
+    "demand_proportional": {
+      "rho_urban": 0.39112,
+      "rho_suburban": 0.3442,
+      "rho_rural": 0.29200000000000004,
+      "delta_geo": 1.3510348115606294,
+      "avg_sinr_db": 29.321444597551032,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.01326973924679
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 37.97206206845883,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.68530377247523
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.56515564438777,
+      "avg_sinr_all": 27.947109426062422
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35464,
+      "rho_suburban": 0.3493,
+      "rho_rural": 0.34940000000000004,
+      "delta_geo": 1.0203574692825328,
+      "avg_sinr_db": 25.843844896858677,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.674904696409065
+    },
+    "snr_priority": {
+      "rho_urban": 0.37736,
+      "rho_suburban": 0.37629999999999997,
+      "rho_rural": 0.29353333333333337,
+      "delta_geo": 1.2976723232469205,
+      "avg_sinr_db": 35.77416272092991,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 47.13643470934263
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38852000000000003,
+      "rho_suburban": 0.3373999999999999,
+      "rho_rural": 0.30086666666666667,
+      "delta_geo": 1.3035189991359621,
+      "avg_sinr_db": 26.879456173812073,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.14153595629774
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 35.487804220522186,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.699766700508825
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 43.710183582004966,
+      "avg_sinr_all": 25.887963985173688
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35407999999999995,
+      "rho_suburban": 0.3495999999999999,
+      "rho_rural": 0.35013333333333335,
+      "delta_geo": 1.0162548424419986,
+      "avg_sinr_db": 27.90577012745725,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.961875204526386
+    },
+    "snr_priority": {
+      "rho_urban": 0.45548,
+      "rho_suburban": 0.4312,
+      "rho_rural": 0.1267333333333333,
+      "delta_geo": 3.69547723102784,
+      "avg_sinr_db": 40.143504891676656,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 46.32170638416103
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38376000000000005,
+      "rho_suburban": 0.3496,
+      "rho_rural": 0.30066666666666664,
+      "delta_geo": 1.2901657342433543,
+      "avg_sinr_db": 29.204371677047007,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.29984567255344
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 38.92370379951445,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 46.05118968999502
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 42.92615992678591,
+      "avg_sinr_all": 27.812183010365246
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35296000000000005,
+      "rho_suburban": 0.34900000000000003,
+      "rho_rural": 0.35239999999999994,
+      "delta_geo": 1.007744762101283,
+      "avg_sinr_db": 21.19697939639145,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.8941360407901
+    },
+    "snr_priority": {
+      "rho_urban": 0.36676,
+      "rho_suburban": 0.44439999999999996,
+      "rho_rural": 0.2658,
+      "delta_geo": 1.3906470544602378,
+      "avg_sinr_db": 36.243288592928465,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 44.47742640336274
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38555999999999996,
+      "rho_suburban": 0.35,
+      "rho_rural": 0.2974,
+      "delta_geo": 1.3072263690857853,
+      "avg_sinr_db": 22.818175192782533,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.315772271658716
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 35.70135153034064,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 44.40729530915843
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 41.87838946011278,
+      "avg_sinr_all": 21.144171199560386
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35319999999999996,
+      "rho_suburban": 0.35040000000000004,
+      "rho_rural": 0.35106666666666664,
+      "delta_geo": 1.0110409996193688,
+      "avg_sinr_db": 12.093056927062134,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.62182674679612
+    },
+    "snr_priority": {
+      "rho_urban": 0.36039999999999994,
+      "rho_suburban": 0.32910000000000006,
+      "rho_rural": 0.3532666666666666,
+      "delta_geo": 1.0237110595401189,
+      "avg_sinr_db": 22.600526141878678,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.93398204542743
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38843999999999995,
+      "rho_suburban": 0.3416,
+      "rho_rural": 0.29819999999999997,
+      "delta_geo": 1.3099964632471284,
+      "avg_sinr_db": 12.92630176166596,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.891625209739544
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 22.279435838677056,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 42.65288502580137
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 40.54813929739832,
+      "avg_sinr_all": 11.991613734988759
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35372,
+      "rho_suburban": 0.3470000000000001,
+      "rho_rural": 0.3524666666666667,
+      "delta_geo": 1.0091588425031806,
+      "avg_sinr_db": 10.737102619400012,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 40.711416765859134
+    },
+    "snr_priority": {
+      "rho_urban": 0.33880000000000005,
+      "rho_suburban": 0.3243,
+      "rho_rural": 0.39246666666666663,
+      "delta_geo": 0.8663501864783157,
+      "avg_sinr_db": 21.41701017207549,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 43.12341865506415
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38660000000000005,
+      "rho_suburban": 0.34299999999999997,
+      "rho_rural": 0.3003333333333334,
+      "delta_geo": 1.2983086889670463,
+      "avg_sinr_db": 11.572265558149118,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 41.01265041541095
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 21.217270770803836,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 42.98602033844201
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 40.70718181913231,
+      "avg_sinr_all": 10.692699192096434
+    }
+  },
+  {
+    "equal_static": {
+      "rho_urban": 0.35316000000000003,
+      "rho_suburban": 0.35339999999999994,
+      "rho_rural": 0.3491333333333333,
+      "delta_geo": 1.0162882780567741,
+      "avg_sinr_db": 19.55085049561701,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.30053842078519
+    },
+    "snr_priority": {
+      "rho_urban": 0.376,
+      "rho_suburban": 0.40269999999999995,
+      "rho_rural": 0.2782,
+      "delta_geo": 1.3693704323073805,
+      "avg_sinr_db": 33.501356815714914,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 45.29995915560202
+    },
+    "demand_proportional": {
+      "rho_urban": 0.38788000000000006,
+      "rho_suburban": 0.3411,
+      "rho_rural": 0.29946666666666666,
+      "delta_geo": 1.303169656501394,
+      "avg_sinr_db": 21.05120060140457,
+      "n_allocated": 352.0,
+      "avg_snr_db_nointf": 42.70318478253833
+    },
+    "fairshare": {
+      "rho_urban": 0.28,
+      "rho_suburban": 0.44000000000000006,
+      "rho_rural": 0.41,
+      "delta_geo": 0.6829268292682926,
+      "avg_sinr_db": 33.05727309549216,
+      "n_allocated": 351.0,
+      "avg_snr_db_nointf": 45.12479861897909
+    },
+    "_stats": {
+      "n_visible_sats_mean": 1000.0,
+      "avg_snr_all": 42.326389538117674,
+      "avg_sinr_all": 19.61935657846599
+    }
+  }
+]

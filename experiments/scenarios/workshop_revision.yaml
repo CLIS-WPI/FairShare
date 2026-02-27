@@ -1,0 +1,65 @@
+scenario_name: "workshop_revision"
+description: >
+  Full revised simulation for DySPAN workshop resubmission.
+  Multi-snapshot orbital dynamics, 3 constellations, interference model.
+
+n_snapshots: 20
+snapshot_interval_sec: 30
+n_monte_carlo: 50
+n_users: 1000
+
+constellations:
+  - starlink_shell1
+  - oneweb
+  - kuiper_shell1
+
+coverage_area:
+  name: "NYC Metropolitan Area"
+  center_lat: 40.7128
+  center_lon: -74.0060
+  urban_radius_km: 22
+  suburban_inner_km: 22
+  suburban_outer_km: 55
+  rural_inner_km: 55
+  rural_outer_km: 165
+
+user_distribution:
+  urban_fraction: 0.50
+  suburban_fraction: 0.20
+  rural_fraction: 0.30
+  urban_sigma_deg: 0.05
+  suburban_ring_inner_deg: 0.20
+  suburban_ring_outer_deg: 0.50
+  rural_ring_inner_deg: 0.50
+  rural_ring_outer_deg: 1.50
+
+channel:
+  carrier_freq_ghz: 20.0
+  bandwidth_mhz: 300
+  sat_eirp_dbw: 45
+  user_gain_dbi: 30
+  noise_figure_db: 2
+  shadow_fading_urban_db: 8
+  shadow_fading_suburban_db: 6
+  shadow_fading_rural_db: 4
+  min_elevation_deg: 10.0
+
+beam:
+  beams_per_satellite: 7
+  beam_3db_width_deg: 1.5
+  beam_peak_gain_dbi: 30
+  freq_reuse_factor: 4
+  beam_spacing_deg: 2.0
+
+policies:
+  - equal_static
+  - snr_priority
+  - demand_proportional
+  - fairshare
+
+fairshare:
+  urban_quota: 0.40
+  suburban_quota: 0.25
+  rural_quota: 0.35
+
+output_dir: "results/workshop_revision"

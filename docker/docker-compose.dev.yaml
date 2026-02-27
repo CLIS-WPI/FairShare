@@ -21,6 +21,7 @@ services:
       - ../results:/workspace/results
       - ../notebooks:/workspace/notebooks
       - ../tests:/workspace/tests
+      - ../scripts:/workspace/scripts
       # Root files (for scripts like verify_framework.py)
       - ../verify_framework.py:/workspace/verify_framework.py
       # Jupyter notebook data
